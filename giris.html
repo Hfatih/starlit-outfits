@@ -14,212 +14,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <style>
-        /* Login page specific styles */
-        .login-page {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .login-page::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
-            animation: rotate 30s linear infinite;
-        }
-
-        @keyframes rotate {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .login-container {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
-            padding: 48px;
-            width: 100%;
-            max-width: 420px;
-            position: relative;
-            z-index: 1;
-            backdrop-filter: blur(20px);
-        }
-
-        .login-logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 32px;
-        }
-
-        .login-logo .logo-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            color: white;
-        }
-
-        .login-logo .logo-text {
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .login-title {
-            text-align: center;
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .login-subtitle {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 14px;
-            margin-bottom: 32px;
-        }
-
-        .login-form .form-group {
-            margin-bottom: 20px;
-        }
-
-        .login-form label {
-            display: block;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-
-        .login-form label i {
-            margin-right: 6px;
-            color: #8b5cf6;
-        }
-
-        .login-form input {
-            width: 100%;
-            padding: 14px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: white;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .login-form input:focus {
-            outline: none;
-            border-color: #8b5cf6;
-            background: rgba(139, 92, 246, 0.1);
-        }
-
-        .login-form input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
-        }
-
-        .form-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            font-size: 13px;
-        }
-
-        .remember-me {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: rgba(255, 255, 255, 0.6);
-            cursor: pointer;
-        }
-
-        .remember-me input {
-            width: 16px;
-            height: 16px;
-            accent-color: #8b5cf6;
-        }
-
-        .forgot-link,
-        .register-link a {
-            color: #8b5cf6;
-            text-decoration: none;
-            transition: color 0.3s;
-            cursor: pointer;
-        }
-
-        .forgot-link:hover,
-        .register-link a:hover {
-            color: #ec4899;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
-        }
-
-        .register-link {
-            text-align: center;
-            margin-top: 24px;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 14px;
-        }
-
-        .login-error {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 8px;
-            padding: 12px;
-            color: #ef4444;
-            font-size: 13px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .login-error.show {
-            display: block;
-        }
-
-        /* Info Popup */
+        /* Info Popup Styles */
         .info-popup-overlay {
             position: fixed;
             top: 0;
@@ -325,26 +120,153 @@
             background: #4752c4;
             transform: translateY(-2px);
         }
+
+        .login-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            color: #ef4444;
+            font-size: 13px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .login-error.show {
+            display: block;
+        }
     </style>
 </head>
 
-<body>
-    <div class="login-page">
-        <div class="login-container">
-            <div class="login-logo">
-                <div class="logo-icon"><i class="fas fa-tshirt"></i></div>
-                <span class="logo-text">Starlit</span>
-            </div>
+<body class="login-body">
+    <!-- Header -->
+    <header class="login-header">
+        <a href="giris.html" class="logo">
+            <div class="logo-icon"><i class="fas fa-tshirt"></i></div>
+            <span class="logo-text">Starlit</span>
+        </a>
+        <button class="login-header-btn"
+            onclick="document.getElementById('loginSection').scrollIntoView({behavior: 'smooth'})">
+            <i class="fas fa-sign-in-alt"></i> Giriş Yap
+        </button>
+    </header>
 
-            <h1 class="login-title">Hoş Geldiniz!</h1>
-            <p class="login-subtitle">Hesabınıza giriş yapın</p>
+    <!-- Hero Section -->
+    <section class="login-hero">
+        <h1 class="hero-title">Starlit</h1>
+        <p class="hero-subtitle">Benzersiz kombinlerin dünyasına hoş geldiniz</p>
+        <p class="hero-description">Profesyonel tasarımcılar ve oyuncular tarafından hazırlanmış binlerce kombinasyon
+            koleksiyonunu keşfedin, paylaşın, kendi özel görünümlerinizi oluşturun.</p>
+        <div class="hero-buttons">
+            <button class="hero-btn primary"
+                onclick="document.getElementById('loginSection').scrollIntoView({behavior: 'smooth'})">
+                <i class="fas fa-sign-in-alt"></i> Giriş Yap
+            </button>
+            <a href="#" class="hero-btn secondary" id="discordBtn">
+                <i class="fab fa-discord"></i> Topluluğa Katıl
+            </a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <h2 class="section-title">Platform Özellikleri</h2>
+        <p class="section-subtitle">Starlit'in profesyonel özelliklerini ve benzersiz fonksiyonlarını keşfedin.</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon purple"><i class="fas fa-tshirt"></i></div>
+                <h3>Kaliteli Kombinler</h3>
+                <p>Profesyonel tasarımcılar ve tecrübeli kullanıcılar tarafından hazırlanmış yüksek kaliteli kombinler.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon cyan"><i class="fas fa-check-circle"></i></div>
+                <h3>Aktif Topluluk</h3>
+                <p>Yüzlerce aktif kullanıcı ile sürekli güncellenen, aktif ve canlı bir topluluk ortamı.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon pink"><i class="fas fa-bolt"></i></div>
+                <h3>Kolay Paylaşım</h3>
+                <p>Hızlı ve kolaycılığıyla dikkat çeken, kullanıcı dostu kombin paylaşım sistemi.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon green"><i class="fas fa-shield-alt"></i></div>
+                <h3>Güvenli Platform</h3>
+                <p>Modern güvenlik önlemleriyle korunan, güvenilir ve stabil bir platform altyapısı.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon orange"><i class="fas fa-rocket"></i></div>
+                <h3>Hızlı Erişim</h3>
+                <p>Aradığınız için kolayca bulmanızı sağlayan, etkili arama ve filtreleme özellikleri.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon red"><i class="fas fa-star"></i></div>
+                <h3>Planlara Katılış</h3>
+                <p>İçerik katkılarını ödüllendiren, motive edici puan ve rozet sistemi.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <h2 class="section-title">Platform İstatistikleri</h2>
+        <p class="section-subtitle">Büyüyen topluluğumuzun bir parçası olun.</p>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <span class="stat-value" id="statKombins">0</span>
+                <span class="stat-label">Aktif Kombin</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="statLikes">0</span>
+                <span class="stat-label">Beğeni Sayısı</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="statViews">0</span>
+                <span class="stat-label">İzlenme</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="statRating">4.9/5</span>
+                <span class="stat-label">Kullanıcı Puanı</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Best of Week -->
+    <section class="best-week-section">
+        <h2 class="section-title">Haftanın En İyisi</h2>
+        <p class="section-subtitle">Son haftanın en beğenilen kombinasyonu</p>
+        <div class="best-week-card" id="bestWeekCard">
+            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=150&h=200&fit=crop"
+                alt="Haftanın En İyisi" class="best-week-image" id="bestWeekImage">
+            <div class="best-week-info">
+                <span class="best-week-badge">Haftanın En İyisi</span>
+                <h3 id="bestWeekTitle">"Henüz İçerik Yok"</h3>
+                <div class="best-week-creator">
+                    <div class="creator-avatar" id="bestWeekAvatar">--</div>
+                    <span id="bestWeekCreator">-</span>
+                </div>
+                <div class="best-week-stats">
+                    <span><i class="fas fa-heart"></i> <span id="bestWeekLikes">0</span> beğeni</span>
+                    <span><i class="fas fa-comment"></i> <span id="bestWeekComments">0</span> Yorum</span>
+                    <span><i class="fas fa-eye"></i> <span id="bestWeekViews">0</span> Görüntülenme</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Section -->
+    <section class="login-section" id="loginSection">
+        <div class="login-card">
+            <h2><i class="fas fa-sign-in-alt"></i> Giriş Yap</h2>
+            <p>Starlit hesabınıza giriş yapın</p>
 
             <div class="login-error" id="loginError">
                 <i class="fas fa-exclamation-circle"></i>
                 <span id="errorMessage">Kullanıcı adı veya şifre hatalı!</span>
             </div>
 
-            <form class="login-form" id="loginForm">
+            <form id="loginForm">
                 <div class="form-group">
                     <label><i class="fas fa-user"></i> Kullanıcı Adı</label>
                     <input type="text" id="username" placeholder="Kullanıcı adınızı girin" required>
@@ -358,18 +280,22 @@
                         <input type="checkbox" id="rememberMe">
                         <span>Beni Hatırla</span>
                     </label>
-                    <a class="forgot-link" onclick="showInfoPopup()">Şifremi Unuttum</a>
+                    <a href="#" class="forgot-password" onclick="showInfoPopup(); return false;">Şifremi Unuttum</a>
                 </div>
-                <button type="submit" class="login-btn">
+                <button type="submit" class="login-submit-btn">
                     <i class="fas fa-sign-in-alt"></i> Giriş Yap
                 </button>
             </form>
-
             <div class="register-link">
-                Hesabınız yok mu? <a onclick="showInfoPopup()">Kayıt Ol</a>
+                Hesabınız yok mu? <a href="#" onclick="showInfoPopup(); return false;">Kayıt Ol</a>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="login-footer">
+        <p>&copy; 2025 Starlit. Tüm hakları saklıdır.</p>
+    </footer>
 
     <!-- Info Popup -->
     <div class="info-popup-overlay" id="infoPopup">
