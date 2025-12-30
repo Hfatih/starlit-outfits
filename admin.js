@@ -1,9 +1,6 @@
 // STARLIT - ADMIN PANEL JS (Database integrated)
 let currentEditRow = null;
-// deleteRow is handled below or scoped
-
-
-const deleteRow = null; // Re-declare if needed or remove if used globally (let was previously used)
+let deleteRow = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     // Determine if DB is ready
@@ -185,11 +182,12 @@ window.goToSection = function (section, filter) {
 // Dashboard with real data
 function initDashboard() {
     // Update stats from database
+    const pendingCount = StarlitDB.getPending().length;
     const stats = {
         kombins: StarlitDB.getContent('kombin', 'approved').length,
         faces: StarlitDB.getContent('yuz', 'approved').length,
-        users: StarlitDB.users.length,
-        pending: StarlitDB.getPending().length
+        users: (StarlitDB._cache.users || []).length,
+        pending: pendingCount
     };
 
     document.querySelectorAll('.stat-card').forEach((card, index) => {
@@ -201,6 +199,14 @@ function initDashboard() {
             if (index === 3) num.textContent = stats.pending;
         }
     });
+
+    // Update sidebar moderation badge
+    const moderationBadge = document.querySelector('[data-section="moderation"] .sidebar-badge');
+    if (moderationBadge) moderationBadge.textContent = pendingCount;
+
+    // Update header notification badge
+    const headerBadge = document.querySelector('.admin-header .notification-badge');
+    if (headerBadge) headerBadge.textContent = pendingCount;
 
     // Update recent uploads from database
     renderRecentUploads();
@@ -440,6 +446,7 @@ function renderReports() {
                         </div>
                     </div>
                     <div class="report-actions">
+                        <button class="mod-btn preview" onclick="viewReport(${report.id})"><i class="fas fa-eye"></i> İncele</button>
                         <button class="mod-btn approve" onclick="resolveReport(${report.id}, 'resolved')"><i class="fas fa-check"></i> Çöz</button>
                         <button class="mod-btn reject" onclick="resolveReport(${report.id}, 'dismissed')"><i class="fas fa-times"></i> Reddet</button>
                     </div>
@@ -450,6 +457,79 @@ function renderReports() {
         list.innerHTML = '<p class="no-content">Bekleyen rapor yok.</p>';
     }
 }
+
+// View Report Detail Modal
+window.viewReport = function (reportId) {
+    const report = (StarlitDB.reports || []).find(r => r.id === reportId);
+    if (!report) {
+        showToast('Rapor bulunamadı.');
+        return;
+    }
+
+    const content = StarlitDB.content.find(c => c.id === report.contentId);
+    const reporter = StarlitDB.getUser(report.reporterId);
+
+    // Create or get modal
+    let modal = document.getElementById('reportDetailModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'reportDetailModal';
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="admin-modal" style="max-width: 600px;">
+                <button class="modal-close" onclick="document.getElementById('reportDetailModal').classList.remove('active')"><i class="fas fa-times"></i></button>
+                <h2><i class="fas fa-flag"></i> Rapor Detayı</h2>
+                <div id="reportDetailContent"></div>
+                <div class="report-detail-actions" style="display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end;">
+                    <button class="mod-btn preview" id="reportViewContent">İçeriği Gör</button>
+                    <button class="mod-btn reject" id="reportDeleteContent">İçeriği Sil</button>
+                    <button class="mod-btn approve" id="reportResolve">Raporu Kapat</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    const detailContent = document.getElementById('reportDetailContent');
+    detailContent.innerHTML = `
+        <div class="report-detail-section">
+            <h4>Raporlanan İçerik</h4>
+            <p><strong>Başlık:</strong> ${content?.title || 'Bilinmiyor'}</p>
+            ${content?.image ? `<img src="${content.image}" alt="" style="max-width: 200px; border-radius: 8px; margin: 12px 0;">` : ''}
+        </div>
+        <div class="report-detail-section" style="margin-top: 16px;">
+            <h4>Rapor Bilgileri</h4>
+            <p><strong>Sebep:</strong> ${report.reason}</p>
+            <p><strong>Raporlayan:</strong> ${reporter?.username || 'Bilinmeyen'}</p>
+            <p><strong>Tarih:</strong> ${report.createdAt}</p>
+        </div>
+    `;
+
+    // Set up action buttons
+    document.getElementById('reportViewContent').onclick = () => {
+        if (content?.image) window.open(content.image, '_blank');
+    };
+
+    document.getElementById('reportDeleteContent').onclick = () => {
+        if (content) {
+            const idx = StarlitDB.content.findIndex(c => c.id === content.id);
+            if (idx > -1) {
+                StarlitDB.content.splice(idx, 1);
+                StarlitDB.save();
+            }
+        }
+        resolveReport(reportId, 'resolved');
+        modal.classList.remove('active');
+        showToast('İçerik silindi ve rapor kapatıldı.');
+    };
+
+    document.getElementById('reportResolve').onclick = () => {
+        resolveReport(reportId, 'resolved');
+        modal.classList.remove('active');
+    };
+
+    modal.classList.add('active');
+};
 
 window.resolveReport = function (id, action) {
     if (StarlitDB.resolveReport(id, action)) {
@@ -555,68 +635,82 @@ function initUsers() {
         if (e.target === addUserModal) addUserModal.classList.remove('active');
     });
 
-    addUserForm?.addEventListener('submit', (e) => {
+    addUserForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const username = document.getElementById('newUsername').value;
         const email = document.getElementById('newEmail').value;
+        const password = document.getElementById('newPassword').value;
         const role = document.getElementById('newRole').value;
 
-        const newUser = {
-            id: StarlitDB.users.length + 1,
-            username,
-            email,
-            password: '123456',
-            role,
-            avatar: username.substring(0, 2).toUpperCase(),
-            avatarUrl: null,
-            createdAt: new Date().toISOString().split('T')[0]
-        };
-        StarlitDB.users.push(newUser);
-        StarlitDB.save();
+        try {
+            await StarlitDB.addUser({
+                username,
+                email,
+                password,
+                role,
+                avatar: username.substring(0, 2).toUpperCase(),
+                avatarUrl: null
+            });
 
-        renderUsersTable();
-        initDashboard();
-        addUserModal.classList.remove('active');
-        addUserForm.reset();
-        showToast('Kullanıcı eklendi!');
+            renderUsersTable();
+            initDashboard();
+            addUserModal.classList.remove('active');
+            addUserForm.reset();
+            showToast('Kullanıcı eklendi!');
+        } catch (error) {
+            console.error('Add user error:', error);
+            showToast('Kullanıcı eklenemedi.');
+        }
     });
 
     closeEditModal?.addEventListener('click', () => editUserModal?.classList.remove('active'));
-    editUserForm?.addEventListener('submit', (e) => {
+    editUserForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (currentEditRow) {
+            const userId = currentEditRow.getAttribute('data-user-id');
             const username = document.getElementById('editUsername').value;
             const email = document.getElementById('editEmail').value;
             const role = document.getElementById('editRole').value;
 
-            const user = StarlitDB.users.find(u => u.username === currentEditRow.cells[0].querySelector('span').textContent);
-            if (user) {
-                user.username = username;
-                user.email = email;
-                user.role = role;
-                user.avatar = username.substring(0, 2).toUpperCase();
-                StarlitDB.save();
-            }
+            try {
+                await StarlitDB.updateUser(userId, {
+                    username,
+                    email,
+                    role,
+                    avatar: username.substring(0, 2).toUpperCase()
+                });
 
-            renderUsersTable();
-            editUserModal.classList.remove('active');
-            showToast('Kullanıcı güncellendi!');
+                renderUsersTable();
+                editUserModal.classList.remove('active');
+                showToast('Kullanıcı güncellendi!');
+            } catch (error) {
+                console.error('Update user error:', error);
+                showToast('Güncelleme başarısız.');
+            }
         }
     });
 
     cancelDelete?.addEventListener('click', () => deleteConfirmModal?.classList.remove('active'));
-    confirmDelete?.addEventListener('click', () => {
+    confirmDelete?.addEventListener('click', async () => {
         if (deleteRow) {
-            const username = deleteRow.cells[0].querySelector('span').textContent;
-            const index = StarlitDB.users.findIndex(u => u.username === username);
-            if (index > -1) {
-                StarlitDB.users.splice(index, 1);
-                StarlitDB.save();
+            const userId = deleteRow.getAttribute('data-user-id');
+            try {
+                // Remove from cache
+                const index = StarlitDB._cache.users.findIndex(u => u.id === userId);
+                if (index > -1) {
+                    StarlitDB._cache.users.splice(index, 1);
+                    StarlitDB.saveToLocalStorage();
+                    // Also delete from Firebase if available
+                    try { await db.collection('users').doc(userId).delete(); } catch (e) { }
+                }
+                renderUsersTable();
+                initDashboard();
+                deleteConfirmModal?.classList.remove('active');
+                showToast('Kullanıcı silindi.');
+            } catch (error) {
+                console.error('Delete user error:', error);
+                showToast('Silme başarısız.');
             }
-            renderUsersTable();
-            initDashboard();
-            deleteConfirmModal?.classList.remove('active');
-            showToast('Kullanıcı silindi.');
         }
     });
 }
@@ -625,16 +719,17 @@ function renderUsersTable() {
     const tbody = document.getElementById('usersTableBody');
     if (!tbody) return;
 
-    tbody.innerHTML = StarlitDB.users.map(user => {
+    const users = StarlitDB._cache.users || [];
+    tbody.innerHTML = users.map(user => {
         const roleClass = user.role === 'admin' ? 'admin' : user.role === 'moderator' ? 'moderator' : 'user';
         const roleText = user.role === 'admin' ? 'Admin' : user.role === 'moderator' ? 'Moderatör' : 'Kullanıcı';
         return `
-            <tr>
-                <td><div class="user-cell"><div class="user-avatar">${user.avatar}</div><span>${user.username}</span></div></td>
-                <td>${user.email}</td>
+            <tr data-user-id="${user.id}">
+                <td><div class="user-cell"><div class="user-avatar">${user.avatar || '--'}</div><span>${user.username}</span></div></td>
+                <td>${user.email || '-'}</td>
                 <td><span class="role-badge ${roleClass}">${roleText}</span></td>
-                <td>${user.createdAt}</td>
-                <td><span class="status-badge active">Aktif</span></td>
+                <td>${user.createdAt || '-'}</td>
+                <td><span class="status-badge ${user.banned ? 'inactive' : 'active'}">${user.banned ? 'Yasaklı' : 'Aktif'}</span></td>
                 <td><button class="table-btn edit" onclick="editUser(this)"><i class="fas fa-edit"></i></button><button class="table-btn delete" onclick="deleteUser(this)"><i class="fas fa-trash"></i></button></td>
             </tr>
         `;

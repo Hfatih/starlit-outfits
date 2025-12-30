@@ -5323,3 +5323,52 @@ body {
     font-size: 18px;
     width: 100%;
 }
+
+/* Admin Settings Two-Column Layout */
+.settings-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.settings-column-left,
+.settings-column-right {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.settings-footer {
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 16px;
+}
+
+.save-settings-btn {
+    background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-pink) 100%);
+    color: white;
+    border: none;
+    padding: 14px 40px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.save-settings-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+}
+
+@media (max-width: 968px) {
+    .settings-layout {
+        grid-template-columns: 1fr;
+    }
+}

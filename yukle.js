@@ -66,15 +66,16 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const code = document.getElementById('code').value.trim();
+        const code = document.getElementById('contentCode').value.trim();
         if (!code) {
             showToast('Kombin Kodu/Yüz Kodu zorunludur!', 'error');
-            document.getElementById('code').focus();
+            document.getElementById('contentCode').focus();
             return;
         }
 
-        const title = document.getElementById('title').value;
-        const tags = document.getElementById('tags').value;
+        const title = document.getElementById('contentTitle').value;
+        const category = document.getElementById('contentCategory').value;
+        const description = document.getElementById('contentDescription').value;
         const btn = uploadForm.querySelector('.submit-btn');
 
         // Loading state
@@ -89,9 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const contentData = {
                 title: title,
                 code: code,
-                tags: tags.split(',').map(tag => tag.trim()),
+                category: category,
+                description: description,
                 type: uploadType, // kombin or yuz
-                imageUrl: compressedImage, // Base64 string
+                image: compressedImage, // Base64 string
                 creatorId: user ? user.id : 'unknown',
                 creatorName: user ? user.username : 'Anonim',
                 creatorAvatar: user ? user.avatar : '--'

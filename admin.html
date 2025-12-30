@@ -35,7 +35,7 @@
             <a href="#moderation" class="sidebar-link" data-section="moderation">
                 <i class="fas fa-check-circle"></i>
                 <span>Moderasyon</span>
-                <span class="sidebar-badge" id="pendingCount">5</span>
+                <span class="sidebar-badge">0</span>
             </a>
             <a href="#users" class="sidebar-link" data-section="users">
                 <i class="fas fa-users"></i>
@@ -74,7 +74,7 @@
             <div class="admin-user">
                 <button class="notification-btn">
                     <i class="fas fa-bell"></i>
-                    <span class="notification-badge">3</span>
+                    <span class="notification-badge">0</span>
                 </button>
                 <div class="user-profile">
                     <div class="user-avatar" id="adminUserAvatar">--</div>
@@ -456,49 +456,31 @@
                 <p>Site ayarlarını düzenleyin</p>
             </div>
 
-            <div class="settings-grid">
-                <div class="settings-card">
-                    <h3><i class="fas fa-globe"></i> Genel Ayarlar</h3>
-                    <div class="settings-form">
-                        <div class="setting-item">
-                            <label>Site Adı</label>
-                            <input type="text" id="siteName" value="Starlit">
-                        </div>
-                        <div class="setting-item">
-                            <label>Site Açıklaması</label>
-                            <textarea
-                                id="siteDescription">En iyi kıyafet kombinlerini keşfedin, paylaşın ve kendi kombinlerinizi yükleyin.</textarea>
-                        </div>
-                        <div class="setting-item">
-                            <label>Bakım Modu</label>
-                            <label class="toggle">
-                                <input type="checkbox" id="maintenanceMode">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="setting-item">
-                            <label>Tahmini Süre</label>
-                            <input type="text" id="maintenanceEstimate" placeholder="~30 Dakika" value="30 Dakika">
-                        </div>
-                    </div>
-
+            <div class="settings-layout">
+                <!-- Left Column -->
+                <div class="settings-column-left">
                     <div class="settings-card">
-                        <h3><i class="fas fa-shield-alt"></i> Moderasyon Ayarları</h3>
+                        <h3><i class="fas fa-globe"></i> Genel Ayarlar</h3>
                         <div class="settings-form">
                             <div class="setting-item">
-                                <label>Otomatik Onay</label>
+                                <label>Site Adı</label>
+                                <input type="text" id="siteName" value="Starlit">
+                            </div>
+                            <div class="setting-item">
+                                <label>Site Açıklaması</label>
+                                <textarea
+                                    id="siteDescription">En iyi kıyafet kombinlerini keşfedin, paylaşın ve kendi kombinlerinizi yükleyin.</textarea>
+                            </div>
+                            <div class="setting-item">
+                                <label>Bakım Modu</label>
                                 <label class="toggle">
-                                    <input type="checkbox">
+                                    <input type="checkbox" id="maintenanceMode">
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
                             <div class="setting-item">
-                                <label>Günlük Yükleme Limiti</label>
-                                <input type="number" value="5">
-                            </div>
-                            <div class="setting-item">
-                                <label>Yasaklı Kelimeler</label>
-                                <textarea placeholder="Her satıra bir kelime yazın..."></textarea>
+                                <label>Tahmini Süre</label>
+                                <input type="text" id="maintenanceEstimate" placeholder="~30 Dakika" value="30 Dakika">
                             </div>
                         </div>
                     </div>
@@ -525,8 +507,30 @@
                             </div>
                         </div>
                     </div>
+                </div>
 
-
+                <!-- Right Column -->
+                <div class="settings-column-right">
+                    <div class="settings-card">
+                        <h3><i class="fas fa-shield-alt"></i> Moderasyon Ayarları</h3>
+                        <div class="settings-form">
+                            <div class="setting-item">
+                                <label>Otomatik Onay</label>
+                                <label class="toggle">
+                                    <input type="checkbox">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>Günlük Yükleme Limiti</label>
+                                <input type="number" value="5">
+                            </div>
+                            <div class="setting-item">
+                                <label>Yasaklı Kelimeler</label>
+                                <textarea placeholder="Her satıra bir kelime yazın..."></textarea>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="settings-card">
                         <h3><i class="fas fa-user-shield"></i> Moderatör Yetkileri</h3>
@@ -569,10 +573,14 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <button class="save-settings-btn">
+            <!-- Save Button at Bottom -->
+            <div class="settings-footer">
+                <button class="save-settings-btn" id="saveSettingsBtn">
                     <i class="fas fa-save"></i> Ayarları Kaydet
                 </button>
+            </div>
         </section>
     </main>
 
