@@ -40,12 +40,23 @@ const StarlitDB = {
         bannedWords: []
     },
 
+    // Default admin user
+    defaultAdmin: {
+        username: 'admin',
+        password: 'admin123',
+        role: 'admin',
+        avatar: 'AD',
+        banned: false,
+        createdAt: new Date().toISOString()
+    },
+
     // Initialize
     init: async function () {
         try {
             await this.loadSettings();
             await this.loadUsers();
             await this.loadContent();
+            this.checkAuth();
             this.checkMaintenanceMode();
             this.applyThemeColors();
             console.log('✅ StarlitDB Firebase initialized');
@@ -58,12 +69,61 @@ const StarlitDB = {
 
     // Fallback to localStorage
     initLocalStorage: function () {
+        console.log('⚠️ Using localStorage fallback');
         const saved = localStorage.getItem('starlitDatabase');
         if (saved) {
             const data = JSON.parse(saved);
             this._cache.users = data.users || [];
             this._cache.content = data.content || [];
             this._cache.settings = data.settings || this.defaultSettings;
+        } else {
+            // Create default data
+            this._cache.users = [this.defaultAdmin];
+            this._cache.content = [];
+            this._cache.settings = this.defaultSettings;
+            this.saveToLocalStorage();
+        }
+        this.checkAuth();
+        this.checkMaintenanceMode();
+        this.applyThemeColors();
+    },
+
+    saveToLocalStorage: function () {
+        localStorage.setItem('starlitDatabase', JSON.stringify({
+            users: this._cache.users,
+            content: this._cache.content,
+            settings: this._cache.settings
+        }));
+    },
+
+    // ==========================================
+    // AUTHENTICATION CHECK
+    // ==========================================
+
+    checkAuth: function () {
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const publicPages = ['giris.html', 'bakim.html'];
+
+        // Skip auth check for public pages
+        if (publicPages.includes(currentPage)) {
+            return;
+        }
+
+        // Check if user is logged in
+        const session = JSON.parse(sessionStorage.getItem('starlitUser') || localStorage.getItem('starlitUser') || 'null');
+
+        if (!session || !session.loggedIn) {
+            // Not logged in, redirect to login
+            window.location.href = 'giris.html';
+            return;
+        }
+
+        // For admin page, check if user has permission
+        if (currentPage === 'admin.html') {
+            if (session.role !== 'admin' && session.role !== 'moderator') {
+                window.location.href = 'index.html';
+                return;
+            }
         }
     },
 
@@ -95,10 +155,14 @@ const StarlitDB = {
         try {
             await db.collection('settings').doc('main').set(newSettings, { merge: true });
             this._cache.settings = { ...this._cache.settings, ...newSettings };
+            this.saveToLocalStorage();
             return true;
         } catch (error) {
             console.error('Settings save error:', error);
-            return false;
+            // Fallback to localStorage
+            this._cache.settings = { ...this._cache.settings, ...newSettings };
+            this.saveToLocalStorage();
+            return true;
         }
     },
 
@@ -114,8 +178,17 @@ const StarlitDB = {
         try {
             const snapshot = await db.collection('users').get();
             this._cache.users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            // Create default admin if no users exist
+            if (this._cache.users.length === 0) {
+                await this.addUser(this.defaultAdmin);
+            }
         } catch (error) {
             console.error('Users load error:', error);
+            // Use localStorage fallback
+            if (this._cache.users.length === 0) {
+                this._cache.users = [{ id: '1', ...this.defaultAdmin }];
+            }
         }
     },
 
@@ -153,10 +226,15 @@ const StarlitDB = {
             });
             const newUser = { id: docRef.id, ...userData };
             this._cache.users.push(newUser);
+            this.saveToLocalStorage();
             return newUser;
         } catch (error) {
             console.error('Add user error:', error);
-            return null;
+            // Fallback to localStorage
+            const newUser = { id: Date.now().toString(), ...userData };
+            this._cache.users.push(newUser);
+            this.saveToLocalStorage();
+            return newUser;
         }
     },
 
@@ -167,10 +245,17 @@ const StarlitDB = {
             if (index !== -1) {
                 this._cache.users[index] = { ...this._cache.users[index], ...updates };
             }
+            this.saveToLocalStorage();
             return true;
         } catch (error) {
             console.error('Update user error:', error);
-            return false;
+            // Fallback
+            const index = this._cache.users.findIndex(u => u.id === userId);
+            if (index !== -1) {
+                this._cache.users[index] = { ...this._cache.users[index], ...updates };
+                this.saveToLocalStorage();
+            }
+            return true;
         }
     },
 
@@ -188,6 +273,7 @@ const StarlitDB = {
             this._cache.content = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         } catch (error) {
             console.error('Content load error:', error);
+            this._cache.content = [];
         }
     },
 
@@ -217,10 +303,23 @@ const StarlitDB = {
             });
             const newContent = { id: docRef.id, ...contentData, likes: 0, views: 0, comments: 0, status: 'pending' };
             this._cache.content.unshift(newContent);
+            this.saveToLocalStorage();
             return newContent;
         } catch (error) {
             console.error('Add content error:', error);
-            return null;
+            // Fallback
+            const newContent = {
+                id: Date.now().toString(),
+                ...contentData,
+                likes: 0,
+                views: 0,
+                comments: 0,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+            this._cache.content.unshift(newContent);
+            this.saveToLocalStorage();
+            return newContent;
         }
     },
 
@@ -231,10 +330,16 @@ const StarlitDB = {
             if (index !== -1) {
                 this._cache.content[index] = { ...this._cache.content[index], ...updates };
             }
+            this.saveToLocalStorage();
             return true;
         } catch (error) {
             console.error('Update content error:', error);
-            return false;
+            const index = this._cache.content.findIndex(c => c.id === contentId);
+            if (index !== -1) {
+                this._cache.content[index] = { ...this._cache.content[index], ...updates };
+                this.saveToLocalStorage();
+            }
+            return true;
         }
     },
 
@@ -242,10 +347,13 @@ const StarlitDB = {
         try {
             await db.collection('content').doc(contentId).delete();
             this._cache.content = this._cache.content.filter(c => c.id !== contentId);
+            this.saveToLocalStorage();
             return true;
         } catch (error) {
             console.error('Delete content error:', error);
-            return false;
+            this._cache.content = this._cache.content.filter(c => c.id !== contentId);
+            this.saveToLocalStorage();
+            return true;
         }
     },
 

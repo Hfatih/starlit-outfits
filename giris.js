@@ -1,157 +1,126 @@
-// STARLIT - GİRİŞ JS
-document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('loginForm');
+// Starlit Login Page JavaScript
 
-    // Load platform stats from database
-    loadPlatformStats();
+// Show/Hide Info Popup
+function showInfoPopup() {
+    document.getElementById('infoPopup').classList.add('show');
+}
 
-    // Load best of week from database
-    loadBestOfWeek();
+function closeInfoPopup() {
+    document.getElementById('infoPopup').classList.remove('show');
+}
 
-    // Load Discord link from settings
-    loadDiscordLink();
-
-    // Demo users (also check database for registered users)
-    const defaultUsers = [
-        { username: 'ByFatih', password: '123456', role: 'admin' },
-        { username: 'xRiot', password: '123456', role: 'moderator' },
-        { username: 'user', password: 'user', role: 'user' }
-    ];
-
-    loginForm?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        const remember = document.getElementById('rememberMe').checked;
-
-        // Check default users first
-        let user = defaultUsers.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
-
-        // Also check database users
-        if (!user && typeof StarlitDB !== 'undefined') {
-            const dbUser = StarlitDB.users.find(u =>
-                u.username.toLowerCase() === username.toLowerCase() && u.password === password
-            );
-            if (dbUser) {
-                user = { username: dbUser.username, role: dbUser.role };
-            }
-        }
-
-        if (user) {
-            const userData = {
-                username: user.username,
-                role: user.role,
-                loggedIn: true
-            };
-
-            // Check if maintenance mode is on and user is not admin/moderator
-            if (typeof StarlitDB !== 'undefined' && StarlitDB.settings?.maintenanceMode) {
-                if (user.role !== 'admin' && user.role !== 'moderator') {
-                    window.location.href = 'bakim.html';
-                    return;
-                }
-            }
-
-            if (remember) {
-                localStorage.setItem('starlitUser', JSON.stringify(userData));
-            } else {
-                sessionStorage.setItem('starlitUser', JSON.stringify(userData));
-            }
-            window.location.href = 'index.html';
-        } else {
-            showError('Kullanıcı adı veya şifre hatalı!');
-        }
-    });
+// Close popup when clicking outside
+document.getElementById('infoPopup')?.addEventListener('click', function (e) {
+    if (e.target === this) {
+        closeInfoPopup();
+    }
 });
 
-function loadPlatformStats() {
-    if (typeof StarlitDB === 'undefined') return;
+// Login Form Handler
+document.getElementById('loginForm')?.addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-    // Get approved content
-    const kombins = StarlitDB.getContent('kombin', 'approved');
-    const faces = StarlitDB.getContent('yuz', 'approved');
-    const allContent = [...kombins, ...faces];
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const rememberMe = document.getElementById('rememberMe').checked;
+    const errorDiv = document.getElementById('loginError');
+    const errorMsg = document.getElementById('errorMessage');
 
-    // Calculate stats
-    const totalKombins = kombins.length;
-    const totalLikes = allContent.reduce((sum, item) => sum + (item.likes || 0), 0);
-    const totalViews = allContent.reduce((sum, item) => sum + (item.views || 0), 0);
+    // Hide previous error
+    errorDiv.classList.remove('show');
 
-    // Update DOM
-    const statKombins = document.getElementById('statKombins');
-    const statLikes = document.getElementById('statLikes');
-    const statViews = document.getElementById('statViews');
+    try {
+        // Wait for StarlitDB to be ready
+        await waitForDB();
 
-    if (statKombins) statKombins.textContent = totalKombins + '+';
-    if (statLikes) statLikes.textContent = totalLikes.toLocaleString();
-    if (statViews) statViews.textContent = totalViews.toLocaleString();
-}
+        // Find user
+        const user = StarlitDB.getUserByUsername(username);
 
-function loadBestOfWeek() {
-    if (typeof StarlitDB === 'undefined') return;
-
-    // Get approved kombins from last week
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
-    const weeklyKombins = StarlitDB.getContent('kombin', 'approved').filter(item => {
-        const itemDate = new Date(item.createdAt);
-        return itemDate >= oneWeekAgo;
-    });
-
-    // Find the one with most likes
-    let bestItem = weeklyKombins.sort((a, b) => (b.likes || 0) - (a.likes || 0))[0];
-
-    // If no weekly content, get the most liked overall
-    if (!bestItem) {
-        bestItem = StarlitDB.getContent('kombin', 'approved')
-            .sort((a, b) => (b.likes || 0) - (a.likes || 0))[0];
-    }
-
-    if (!bestItem) return;
-
-    // Get creator info
-    const creator = StarlitDB.getUser(bestItem.creatorId);
-
-    // Update DOM
-    const bestWeekImage = document.getElementById('bestWeekImage');
-    const bestWeekTitle = document.getElementById('bestWeekTitle');
-    const bestWeekAvatar = document.getElementById('bestWeekAvatar');
-    const bestWeekCreator = document.getElementById('bestWeekCreator');
-    const bestWeekLikes = document.getElementById('bestWeekLikes');
-    const bestWeekComments = document.getElementById('bestWeekComments');
-    const bestWeekViews = document.getElementById('bestWeekViews');
-
-    if (bestWeekImage) bestWeekImage.src = bestItem.image;
-    if (bestWeekTitle) bestWeekTitle.textContent = `"${bestItem.title}"`;
-    if (bestWeekAvatar) bestWeekAvatar.textContent = creator?.avatar || bestItem.title.substring(0, 2).toUpperCase();
-    if (bestWeekCreator) bestWeekCreator.textContent = creator?.username || 'Bilinmeyen';
-    if (bestWeekLikes) bestWeekLikes.textContent = bestItem.likes || 0;
-    if (bestWeekComments) bestWeekComments.textContent = bestItem.comments?.length || 0;
-    if (bestWeekViews) bestWeekViews.textContent = bestItem.views || 0;
-}
-
-function loadDiscordLink() {
-    if (typeof StarlitDB === 'undefined') return;
-
-    const discordUrl = StarlitDB.settings?.discordInviteUrl;
-    if (discordUrl) {
-        const discordBtn = document.getElementById('discordBtn');
-        if (discordBtn) {
-            discordBtn.href = discordUrl;
-            discordBtn.target = '_blank';
+        if (!user) {
+            showError('Kullanıcı bulunamadı!');
+            return;
         }
+
+        if (user.password !== password) {
+            showError('Şifre hatalı!');
+            return;
+        }
+
+        // Check if user is banned
+        if (user.banned) {
+            showError('Bu hesap yasaklanmış!');
+            return;
+        }
+
+        // Login successful
+        const sessionData = {
+            loggedIn: true,
+            username: user.username,
+            role: user.role,
+            avatar: user.avatar || user.username.substring(0, 2).toUpperCase(),
+            userId: user.id
+        };
+
+        // Save session
+        if (rememberMe) {
+            localStorage.setItem('starlitUser', JSON.stringify(sessionData));
+        } else {
+            sessionStorage.setItem('starlitUser', JSON.stringify(sessionData));
+        }
+
+        // Redirect to home
+        window.location.href = 'index.html';
+
+    } catch (error) {
+        console.error('Login error:', error);
+        showError('Bir hata oluştu, lütfen tekrar deneyin.');
     }
-}
+});
 
 function showError(message) {
-    let errorEl = document.querySelector('.login-error');
-    if (!errorEl) {
-        errorEl = document.createElement('div');
-        errorEl.className = 'login-error';
-        document.getElementById('loginForm').prepend(errorEl);
-    }
-    errorEl.textContent = message;
-    errorEl.style.display = 'block';
-    setTimeout(() => errorEl.style.display = 'none', 3000);
+    const errorDiv = document.getElementById('loginError');
+    const errorMsg = document.getElementById('errorMessage');
+    errorMsg.textContent = message;
+    errorDiv.classList.add('show');
 }
+
+// Wait for database to be ready
+function waitForDB() {
+    return new Promise((resolve) => {
+        if (typeof StarlitDB !== 'undefined' && StarlitDB._cache) {
+            resolve();
+        } else {
+            const checkInterval = setInterval(() => {
+                if (typeof StarlitDB !== 'undefined' && StarlitDB._cache) {
+                    clearInterval(checkInterval);
+                    resolve();
+                }
+            }, 100);
+
+            // Timeout after 5 seconds
+            setTimeout(() => {
+                clearInterval(checkInterval);
+                resolve();
+            }, 5000);
+        }
+    });
+}
+
+// Load Discord URL from settings
+document.addEventListener('DOMContentLoaded', async function () {
+    await waitForDB();
+
+    // Update Discord link if settings available
+    if (StarlitDB?.settings?.discordInviteUrl) {
+        const discordLink = document.getElementById('discordLink');
+        if (discordLink) {
+            discordLink.href = StarlitDB.settings.discordInviteUrl;
+        }
+    }
+
+    // Check if already logged in
+    const session = JSON.parse(sessionStorage.getItem('starlitUser') || localStorage.getItem('starlitUser') || 'null');
+    if (session && session.loggedIn) {
+        window.location.href = 'index.html';
+    }
+});
