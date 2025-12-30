@@ -1,8 +1,20 @@
 // STARLIT - ADMIN PANEL JS (Database integrated)
 let currentEditRow = null;
-let deleteRow = null;
+// deleteRow is handled below or scoped
+
+
+const deleteRow = null; // Re-declare if needed or remove if used globally (let was previously used)
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Determine if DB is ready
+    if (window.StarlitDB && StarlitDB.ready) {
+        initAdminPanel();
+    } else {
+        document.addEventListener('starlit-ready', initAdminPanel);
+    }
+});
+
+function initAdminPanel() {
     // Check admin access first - redirect if not authorized
     if (!checkAdminAccess()) {
         return;
@@ -10,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load current user info in admin header
     initAdminUser();
+    // Also init shared UI stuff (notifications etc) if shared-ui.js is present
+    if (typeof initSharedUI === 'function') initSharedUI();
 
     loadSettings();
     initNavigation();
@@ -22,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSettings();
     initThemeSettings();
     initNotifications();
-});
+}
 
 // Check if current user has admin/mod access
 function checkAdminAccess() {

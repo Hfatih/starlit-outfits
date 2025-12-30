@@ -24,8 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initializeApp() {
-    initUserDisplay();
-    renderNotifications();
+    // Shared UI is handled by shared-ui.js
     loadDiscordUrl();
     renderBestOfWeek();
     renderFeaturedSlider(currentPeriod);

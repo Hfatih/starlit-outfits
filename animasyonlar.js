@@ -1,17 +1,22 @@
 // STARLIT - ANİMASYONLAR JS (with database integration)
-let currentTopicId = 1;
+let currentTopicId = null;
 const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toastMessage');
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderTopicsList(); // Render topics from database first
+    // Wait for DB or just render default structure
+    renderTopicsList();
     initTopics();
     initNewTopic();
     initChat();
     initSort();
     initLockButton();
     initPinButton();
-    loadTopic(0); // Load first topic
+
+    // Do NOT load a topic by default if we want empty state
+    // Or load first if exists. User wants EMPTY state if nothing selected?
+    // User complaint: "fotoğrafta sağı boşalt".
+    clearRightPanel();
 });
 
 // Render all topics from StarlitDB.topics

@@ -52,10 +52,9 @@
 
         <!-- Right Content - Chat View -->
         <main class="forum-content">
-            <div class="chat-header">
-                <h2 id="chatTitle">femalepose (1-376)</h2>
-                <div class="chat-header-info" id="chatInfo" style="display: none;">Bu gönderi kapatıldı ve kilitlendi.
-                    Yalnızca moderatörler tekrar açabilir.</div>
+            <div class="chat-header" style="display: none;">
+                <h2 id="chatTitle"></h2>
+                <div class="chat-header-info" id="chatInfo" style="display: none;"></div>
                 <div class="chat-actions">
                     <button class="chat-action-btn pin-btn" id="pinBtn" title="Başa Tuttur"><i
                             class="fas fa-thumbtack"></i></button>
@@ -68,7 +67,7 @@
                 <!-- Messages will be populated by JS -->
             </div>
 
-            <div class="chat-input-area" id="chatInputArea">
+            <div class="chat-input-area" id="chatInputArea" style="display: none;">
                 <button class="chat-attach-btn" id="attachBtn"><i class="fas fa-plus"></i></button>
                 <input type="file" id="chatImageInput" accept="image/*" hidden>
                 <input type="text" id="chatInput" placeholder="Bu kanala mesaj gönder...">
@@ -115,6 +114,7 @@
     </div>
 
     <script src="database.js"></script>
+    <script src="shared-ui.js"></script>
     <script src="animasyonlar.js"></script>
 </body>
 
