@@ -68,8 +68,8 @@ document.getElementById('loginForm')?.addEventListener('submit', async function 
             sessionStorage.setItem('starlitUser', JSON.stringify(sessionData));
         }
 
-        // Redirect to home
-        window.location.href = 'index.html';
+        // Redirect to home (dashboard)
+        window.location.href = 'anasayfa.html';
 
     } catch (error) {
         console.error('Login error:', error);
@@ -121,6 +121,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Check if already logged in
     const session = JSON.parse(sessionStorage.getItem('starlitUser') || localStorage.getItem('starlitUser') || 'null');
     if (session && session.loggedIn) {
-        window.location.href = 'index.html';
+        window.location.href = 'anasayfa.html';
     }
 });

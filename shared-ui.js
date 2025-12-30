@@ -135,7 +135,7 @@ function initLogout() {
 
         newBtn.addEventListener('click', () => {
             StarlitDB.logout();
-            window.location.href = 'giris.html';
+            window.location.href = 'index.html';
         });
     }
 }
