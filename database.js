@@ -1,14 +1,12 @@
 // Firebase Configuration
-// KULLANICI: Bu değerleri kendi Firebase projenizden alın
-// Firebase Console → Project Settings → Your apps → Web app → Firebase SDK snippet
-
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDP-refrtTrqCMeEtGJwDNEuxODQXiKrB8",
+    authDomain: "starlit-outfits.firebaseapp.com",
+    projectId: "starlit-outfits",
+    storageBucket: "starlit-outfits.firebasestorage.app",
+    messagingSenderId: "601531597632",
+    appId: "1:601531597632:web:1f027ff5edb7011117b0a5",
+    measurementId: "G-HYDK9E6ZE4"
 };
 
 // Initialize Firebase
