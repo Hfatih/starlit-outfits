@@ -101,8 +101,17 @@ const StarlitDB = {
     // ==========================================
 
     checkAuth: function () {
-        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-        const publicPages = ['giris.html', 'bakim.html'];
+        let currentPage = window.location.pathname.split('/').pop();
+
+        // Handle root path
+        if (!currentPage) currentPage = 'index';
+
+        // Remove .html if present
+        if (currentPage.endsWith('.html')) {
+            currentPage = currentPage.replace('.html', '');
+        }
+
+        const publicPages = ['giris', 'bakim'];
 
         // Skip auth check for public pages
         if (publicPages.includes(currentPage)) {
@@ -119,7 +128,7 @@ const StarlitDB = {
         }
 
         // For admin page, check if user has permission
-        if (currentPage === 'admin.html') {
+        if (currentPage === 'admin') {
             if (session.role !== 'admin' && session.role !== 'moderator') {
                 window.location.href = 'index.html';
                 return;

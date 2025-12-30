@@ -13,8 +13,14 @@ const removeImageBtn = document.getElementById('removeImage');
 const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toastMessage');
 let uploadType = 'kombin';
+let compressedImage = null; // Store compressed image data
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Check Auth
+    if (typeof StarlitDB !== 'undefined') {
+        StarlitDB.checkAuth();
+    }
+
     document.querySelectorAll('.upload-option').forEach(option => {
         option.addEventListener('click', () => {
             uploadType = option.dataset.type;
@@ -29,47 +35,156 @@ document.addEventListener('DOMContentLoaded', () => {
         uploadSelection.style.display = 'block';
         uploadFormSection.style.display = 'none';
         uploadForm.reset();
-        previewImg.src = '';
-        imagePreview.classList.remove('active');
-        imageUploadArea.style.display = 'block';
+        resetImagePreview();
     });
 
     imageUploadArea?.addEventListener('click', () => contentImage.click());
 
-    contentImage?.addEventListener('change', (e) => {
+    contentImage?.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                previewImg.src = ev.target.result;
+            try {
+                // Show loading state
+                imageUploadArea.innerHTML = '<i class="fas fa-spinner fa-spin"></i><p>Resim işleniyor...</p>';
+
+                // Compress Image
+                compressedImage = await compressImage(file, 1); // Max 1MB
+
+                // Show Preview
+                previewImg.src = compressedImage;
                 imagePreview.classList.add('active');
                 imageUploadArea.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
+
+                // Reset upload area text
+                setTimeout(() => {
+                    imageUploadArea.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><p>Resim Seç veya Sürükle</p><span>PNG, JPG, GIF (Max 5MB)</span>';
+                }, 500);
+            } catch (error) {
+                console.error('Compression error:', error);
+                showToast('Resim işlenirken bir hata oluştu', 'error');
+                resetImagePreview();
+            }
         }
     });
 
-    removeImageBtn?.addEventListener('click', () => {
-        previewImg.src = '';
-        imagePreview.classList.remove('active');
-        imageUploadArea.style.display = 'block';
-        contentImage.value = '';
-    });
+    removeImageBtn?.addEventListener('click', resetImagePreview);
 
-    uploadForm?.addEventListener('submit', (e) => {
+    uploadForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        if (!compressedImage) {
+            showToast('Lütfen bir resim seçin!', 'error');
+            return;
+        }
+
+        const title = document.getElementById('title').value;
+        const code = document.getElementById('code').value;
+        const tags = document.getElementById('tags').value;
         const btn = uploadForm.querySelector('.submit-btn');
+
+        // Loading state
+        const originalBtnText = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
         btn.disabled = true;
-        setTimeout(() => {
-            toastMessage.textContent = 'İçerik moderasyon onayına gönderildi!';
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Onaya Gönder';
+
+        try {
+            const user = StarlitDB.getCurrentUser();
+
+            const contentData = {
+                title: title,
+                code: code,
+                tags: tags.split(',').map(tag => tag.trim()),
+                type: uploadType, // kombin or yuz
+                imageUrl: compressedImage, // Base64 string
+                creatorId: user ? user.id : 'unknown',
+                creatorName: user ? user.username : 'Anonim',
+                creatorAvatar: user ? user.avatar : '--'
+            };
+
+            await StarlitDB.addContent(contentData);
+
+            showToast('İçerik moderasyon onayına gönderildi!', 'success');
+
+            // Reset form
+            setTimeout(() => {
+                uploadSelection.style.display = 'block';
+                uploadFormSection.style.display = 'none';
+                uploadForm.reset();
+                resetImagePreview();
+                btn.innerHTML = originalBtnText;
+                btn.disabled = false;
+            }, 1500);
+
+        } catch (error) {
+            console.error('Upload error:', error);
+            showToast('Yükleme başarısız oldu.', 'error');
+            btn.innerHTML = originalBtnText;
             btn.disabled = false;
-            uploadSelection.style.display = 'block';
-            uploadFormSection.style.display = 'none';
-            uploadForm.reset();
-        }, 1500);
+        }
     });
 });
+
+function resetImagePreview() {
+    previewImg.src = '';
+    imagePreview.classList.remove('active');
+    imageUploadArea.style.display = 'block';
+    contentImage.value = '';
+    compressedImage = null;
+}
+
+function showToast(message, type = 'success') {
+    toastMessage.textContent = message;
+    toast.style.background = type === 'error' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(16, 185, 129, 0.9)';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// Image Compression Function
+async function compressImage(file, maxSizeMB = 1) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                // Resize if too big (max 1200px width/height for reasonable quality/size trade-off)
+                const MAX_DIMENSION = 1200;
+                if (width > height) {
+                    if (width > MAX_DIMENSION) {
+                        height *= MAX_DIMENSION / width;
+                        width = MAX_DIMENSION;
+                    }
+                } else {
+                    if (height > MAX_DIMENSION) {
+                        width *= MAX_DIMENSION / height;
+                        height = MAX_DIMENSION;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Start with high quality 0.9
+                let quality = 0.9;
+                let dataUrl = canvas.toDataURL('image/jpeg', quality);
+
+                // Reduce quality steps if file is too large
+                while (dataUrl.length > maxSizeMB * 1024 * 1024 && quality > 0.3) {
+                    quality -= 0.1;
+                    dataUrl = canvas.toDataURL('image/jpeg', quality);
+                }
+
+                resolve(dataUrl);
+            };
+            img.onerror = (error) => reject(error);
+        };
+        reader.onerror = (error) => reject(error);
+    });
+}
