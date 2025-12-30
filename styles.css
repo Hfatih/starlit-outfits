@@ -5311,3 +5311,15 @@ body {
 #profile {
     scroll-margin-top: 100px;
 }
+
+
+/* Empty State */
+.no-content-full {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    color: var(--text-muted);
+    font-size: 18px;
+    width: 100%;
+}

@@ -56,6 +56,17 @@ function renderTopicsList() {
     });
 
     list.innerHTML = html;
+
+    // Handle empty state visibility
+    const chatSection = document.querySelector('.forum-body'); // Changed selector based on HTML structure hypothesis, checking below
+    // Note: Actually the split layout is .forum-layout. The chat part is right side.
+    const emptyState = document.getElementById('emptyTopicsState');
+
+    if (sortedTopics.length === 0) {
+        if (chatSection) chatSection.style.display = 'none'; // Or hide specific parts
+        // Assuming we want to show nothing if empty
+        document.querySelector('.forum-layout').innerHTML = '<div class="no-content-full">Henüz hiç konu açılmamış. İlk konuyu sen aç!</div>';
+    }
 }
 
 // Topics
@@ -369,45 +380,65 @@ function initChat() {
     const attachBtn = document.getElementById('attachBtn');
     const imageInput = document.getElementById('chatImageInput');
 
-    attachBtn?.addEventListener('click', () => {
-        if (StarlitDB.canUserWrite(currentTopicId)) {
-            imageInput?.click();
+    imageInput?.click();
+} else {
+    showToast('Bu kanalda mesaj gönderme yetkiniz yok!');
+}
+    });
+
+// Paste support for chat
+document.addEventListener('paste', (e) => {
+    // Only handle if chat input is focused or chat section is active
+    if (document.activeElement === input || document.querySelector('.forum-body')?.style.display !== 'none') {
+        // Check if we are actually in the forum page
+        if (!document.getElementById('chatInput')) return;
+
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let item of items) {
+            if (item.type.indexOf('image') === 0) {
+                const blob = item.getAsFile();
+                if (StarlitDB.canUserWrite(currentTopicId)) {
+                    handleChatImage(blob);
+                } else {
+                    showToast('Bu kanalda mesaj gönderme yetkiniz yok!');
+                }
+                break;
+            }
+        }
+    }
+});
+
+imageInput?.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            if (StarlitDB.addMessage(currentTopicId, '[Görsel]', ev.target.result)) {
+                renderMessages();
+                showToast('Görsel gönderildi!');
+            }
+            imageInput.value = '';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+sendBtn?.addEventListener('click', () => {
+    const text = input.value.trim();
+    if (text) {
+        if (StarlitDB.addMessage(currentTopicId, text)) {
+            input.value = '';
+            renderMessages();
+            showToast('Mesaj gönderildi!');
         } else {
             showToast('Bu kanalda mesaj gönderme yetkiniz yok!');
         }
-    });
+    }
+});
 
-    imageInput?.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                if (StarlitDB.addMessage(currentTopicId, '[Görsel]', ev.target.result)) {
-                    renderMessages();
-                    showToast('Görsel gönderildi!');
-                }
-                imageInput.value = '';
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    sendBtn?.addEventListener('click', () => {
-        const text = input.value.trim();
-        if (text) {
-            if (StarlitDB.addMessage(currentTopicId, text)) {
-                input.value = '';
-                renderMessages();
-                showToast('Mesaj gönderildi!');
-            } else {
-                showToast('Bu kanalda mesaj gönderme yetkiniz yok!');
-            }
-        }
-    });
-
-    input?.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendBtn?.click();
-    });
+input?.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendBtn?.click();
+});
 }
 
 function showToast(msg) {
