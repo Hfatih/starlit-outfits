@@ -11,7 +11,21 @@ let currentPeriod = 'daily';
 let isPlaying = true;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Determine if DB is ready
+    if (window.StarlitDB && StarlitDB.ready) {
+        initializeApp();
+    } else {
+        document.addEventListener('starlit-ready', initializeApp);
+        // Fallback for slow load
+        setTimeout(() => {
+            if (!StarlitDB.ready) initializeApp();
+        }, 2000);
+    }
+});
+
+function initializeApp() {
     initUserDisplay();
+    renderNotifications();
     loadDiscordUrl();
     renderBestOfWeek();
     renderFeaturedSlider(currentPeriod);
@@ -19,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTop10Tabs();
     initFeaturedControls();
     initViewAllNotifications();
-});
+}
 
 // Initialize user display for header and welcome section
 function initUserDisplay() {
@@ -38,24 +52,28 @@ function initUserDisplay() {
 
         // Update header
         if (headerAvatar) {
-            headerAvatar.textContent = avatarText;
             if (user.avatarUrl) {
+                headerAvatar.textContent = '';
                 headerAvatar.style.backgroundImage = `url(${user.avatarUrl})`;
                 headerAvatar.style.backgroundSize = 'cover';
                 headerAvatar.style.backgroundPosition = 'center';
-                headerAvatar.textContent = '';
+            } else {
+                headerAvatar.textContent = avatarText;
+                headerAvatar.style.backgroundImage = 'none';
             }
         }
         if (headerName) headerName.textContent = user.username;
 
         // Update welcome section
         if (welcomeAvatar) {
-            welcomeAvatar.textContent = avatarText;
             if (user.avatarUrl) {
+                welcomeAvatar.textContent = '';
                 welcomeAvatar.style.backgroundImage = `url(${user.avatarUrl})`;
                 welcomeAvatar.style.backgroundSize = 'cover';
                 welcomeAvatar.style.backgroundPosition = 'center';
-                welcomeAvatar.textContent = '';
+            } else {
+                welcomeAvatar.textContent = avatarText;
+                welcomeAvatar.style.backgroundImage = 'none'; // Reset gradient if needed, or keep CSS default
             }
         }
         if (welcomeName) welcomeName.textContent = user.username;
@@ -66,12 +84,39 @@ function initUserDisplay() {
             adminBtn.style.display = (user.role === 'admin' || user.role === 'moderator') ? 'flex' : 'none';
         }
     } else {
-        // Not logged in, redirect to login
+        // Not logged in
         if (headerName) headerName.textContent = 'Giriş Yap';
         if (headerAvatar) headerAvatar.textContent = '?';
         if (welcomeName) welcomeName.textContent = 'Ziyaretçi';
         if (welcomeAvatar) welcomeAvatar.textContent = '?';
     }
+}
+
+// Render Notifications
+function renderNotifications() {
+    const list = document.getElementById('notifList');
+    const badge = document.getElementById('notifBadge');
+    if (!list) return;
+
+    // Get real notifications (mockup for now, or DB implemented)
+    // For now, we'll show empty state or fetch from a 'notifications' collection if it existed
+    // Since notifications aren't fully in DB yet, we'll use a local mock or empty state
+
+    // Clear list
+    list.innerHTML = '';
+
+    // Empty state
+    list.innerHTML = `
+        <div class="notif-item" data-id="welcome">
+            <div class="notif-icon approve"><i class="fas fa-check"></i></div>
+            <div class="notif-content">
+                <p>Henüz bildirim yok</p>
+                <span class="notif-time">-</span>
+            </div>
+        </div>
+    `;
+
+    if (badge) badge.textContent = '0';
 }
 
 // Discord URL from settings

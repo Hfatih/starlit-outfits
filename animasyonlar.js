@@ -47,10 +47,10 @@ function renderTopicsList() {
                     <p><span class="tag-pink">${creator?.username || 'Bilinmeyen'}:</span> ${topic.code}</p>
                     <div class="topic-meta">
                         <span><i class="fas fa-comment"></i> ${messageCount}</span>
-                        <span>30+ gün önce</span>
+                        <button class="topic-share-btn" onclick="shareTopic(event, ${topic.id})"><i class="fas fa-share-alt"></i></button>
                     </div>
                 </div>
-                <img src="${topic.image}" class="topic-thumb">
+                ${topic.image ? `<img src="${topic.image}" class="topic-thumb">` : ''}
             </div>
         `;
     });
@@ -181,14 +181,17 @@ function renderMessages() {
     const container = document.getElementById('chatMessages');
     const messages = StarlitDB.messages[currentTopicId] || [];
 
-    container.innerHTML = messages.map(msg => {
-        const user = StarlitDB.getUser(msg.userId);
-        const avatarStyle = user?.avatarUrl
-            ? `style="background-image: url(${user.avatarUrl}); background-size: cover; background-position: center;"`
-            : '';
-        const avatarText = user?.avatarUrl ? '' : (user?.avatar || '??');
+    if (messages.length === 0) {
+        container.innerHTML = '<div class="no-messages">Henüz mesaj yok. İlk mesajı sen yaz!</div>';
+    } else {
+        container.innerHTML = messages.map(msg => {
+            const user = StarlitDB.getUser(msg.userId);
+            const avatarStyle = user?.avatarUrl
+                ? `style="background-image: url(${user.avatarUrl}); background-size: cover; background-position: center;"`
+                : '';
+            const avatarText = user?.avatarUrl ? '' : (user?.avatar || '??');
 
-        return `
+            return `
         <div class="chat-message">
             <div class="msg-avatar" ${avatarStyle}>${avatarText}</div>
             <div class="msg-content">
@@ -202,7 +205,18 @@ function renderMessages() {
             </div>
         </div>
     `}).join('');
+    }
     container.scrollTop = container.scrollHeight;
+}
+
+function shareTopic(event, topicId) {
+    event.stopPropagation();
+    const url = window.location.origin + window.location.pathname + '?topic=' + topicId;
+    navigator.clipboard.writeText(url).then(() => {
+        showToast('Konu linki kopyalandı!');
+    }).catch(() => {
+        showToast('Link kopyalanamadı!');
+    });
 }
 
 // Sort
@@ -299,7 +313,7 @@ function initNewTopic() {
             pinned: false,
             locked: false,
             creatorId: user?.id || 1,
-            image: previewImg.src || 'https://images.unsplash.com/photo-1547153760-18fc86324498?w=400'
+            image: previewImg.src || null // Optional image
         };
         StarlitDB.topics.push(newTopic);
         StarlitDB.messages[newTopic.id] = [];
@@ -326,9 +340,12 @@ function addTopicToDOM(topic) {
         <div class="topic-info">
             <h4>${topic.title}</h4>
             <p><span class="tag-pink">${creator?.username || 'Bilinmeyen'}:</span> ${topic.code}</p>
-            <div class="topic-meta"><span><i class="fas fa-comment"></i> ${(StarlitDB.messages[topic.id] || []).length}</span><span>Şimdi</span></div>
+            <div class="topic-meta">
+                <span><i class="fas fa-comment"></i> ${(StarlitDB.messages[topic.id] || []).length}</span>
+                <button class="topic-share-btn" onclick="shareTopic(event, ${topic.id})"><i class="fas fa-share-alt"></i></button>
+            </div>
         </div>
-        <img src="${topic.image}" class="topic-thumb">
+        ${topic.image ? `<img src="${topic.image}" class="topic-thumb">` : ''}
     `;
     el.addEventListener('click', () => {
         document.querySelectorAll('.topic-item').forEach(t => t.classList.remove('active'));

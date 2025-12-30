@@ -40,29 +40,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     imageUploadArea?.addEventListener('click', () => contentImage.click());
 
-    contentImage?.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            try {
-                // Show loading state
-                imageUploadArea.innerHTML = '<i class="fas fa-spinner fa-spin"></i><p>Resim işleniyor...</p>';
+    contentImage?.addEventListener('change', handleFileSelect);
 
-                // Compress Image
-                compressedImage = await compressImage(file, 1); // Max 1MB
+    // Paste Support
+    document.addEventListener('paste', (e) => {
+        if (uploadFormSection.style.display === 'none') return;
 
-                // Show Preview
-                previewImg.src = compressedImage;
-                imagePreview.classList.add('active');
-                imageUploadArea.style.display = 'none';
-
-                // Reset upload area text
-                setTimeout(() => {
-                    imageUploadArea.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><p>Resim Seç veya Sürükle</p><span>PNG, JPG, GIF (Max 5MB)</span>';
-                }, 500);
-            } catch (error) {
-                console.error('Compression error:', error);
-                showToast('Resim işlenirken bir hata oluştu', 'error');
-                resetImagePreview();
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let item of items) {
+            if (item.type.indexOf('image') === 0) {
+                const blob = item.getAsFile();
+                handleFileBlob(blob);
+                break;
             }
         }
     });
@@ -73,12 +62,18 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
 
         if (!compressedImage) {
-            showToast('Lütfen bir resim seçin!', 'error');
+            showToast('Lütfen bir resim seçin veya yapıştırın (Ctrl+V)!', 'error');
+            return;
+        }
+
+        const code = document.getElementById('code').value.trim();
+        if (!code) {
+            showToast('Kombin Kodu/Yüz Kodu zorunludur!', 'error');
+            document.getElementById('code').focus();
             return;
         }
 
         const title = document.getElementById('title').value;
-        const code = document.getElementById('code').value;
         const tags = document.getElementById('tags').value;
         const btn = uploadForm.querySelector('.submit-btn');
 
@@ -86,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const originalBtnText = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
         btn.disabled = true;
+        btn.style.opacity = '0.7';
 
         try {
             const user = StarlitDB.getCurrentUser();
@@ -113,16 +109,49 @@ document.addEventListener('DOMContentLoaded', () => {
                 resetImagePreview();
                 btn.innerHTML = originalBtnText;
                 btn.disabled = false;
-            }, 1500);
+                btn.style.opacity = '1';
+            }, 2000);
 
         } catch (error) {
             console.error('Upload error:', error);
             showToast('Yükleme başarısız oldu.', 'error');
             btn.innerHTML = originalBtnText;
             btn.disabled = false;
+            btn.style.opacity = '1';
         }
     });
 });
+
+async function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) handleFileBlob(file);
+}
+
+async function handleFileBlob(file) {
+    if (file) {
+        try {
+            // Show loading state
+            imageUploadArea.innerHTML = '<i class="fas fa-spinner fa-spin"></i><p>Resim işleniyor...</p>';
+
+            // Compress Image
+            compressedImage = await compressImage(file, 1); // Max 1MB
+
+            // Show Preview
+            previewImg.src = compressedImage;
+            imagePreview.classList.add('active');
+            imageUploadArea.style.display = 'none';
+
+            // Reset upload area text
+            setTimeout(() => {
+                imageUploadArea.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><p>Resim Seç veya Sürükle</p><span>PNG, JPG, GIF (Max 5MB)</span>';
+            }, 500);
+        } catch (error) {
+            console.error('Compression error:', error);
+            showToast('Resim işlenirken bir hata oluştu', 'error');
+            resetImagePreview();
+        }
+    }
+}
 
 function resetImagePreview() {
     previewImg.src = '';

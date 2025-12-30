@@ -60,6 +60,10 @@ const StarlitDB = {
             this.checkMaintenanceMode();
             this.applyThemeColors();
             console.log('✅ StarlitDB Firebase initialized');
+
+            // Dispatch ready event
+            document.dispatchEvent(new CustomEvent('starlit-ready'));
+            this.ready = true;
         } catch (error) {
             console.error('❌ Firebase init error:', error);
             // Fallback to localStorage if Firebase fails
@@ -86,6 +90,10 @@ const StarlitDB = {
         this.checkAuth();
         this.checkMaintenanceMode();
         this.applyThemeColors();
+
+        // Dispatch ready event
+        document.dispatchEvent(new CustomEvent('starlit-ready'));
+        this.ready = true;
     },
 
     saveToLocalStorage: function () {

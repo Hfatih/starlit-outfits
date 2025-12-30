@@ -1371,6 +1371,8 @@ body::before {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     padding: 24px;
+    scroll-margin-top: 100px;
+    /* Fix for header covering */
 }
 
 .card-header {
@@ -4393,15 +4395,18 @@ body::before {
 }
 
 .back-btn {
-    width: 36px;
-    height: 36px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
+    gap: 10px;
+    padding: 12px 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
     text-decoration: none;
-    border-radius: var(--radius-sm);
-    transition: all 0.2s;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all var(--transition-fast);
 }
 
 .back-btn:hover {
@@ -5277,4 +5282,32 @@ body {
 
 .empty-state p {
     font-size: 14px;
+}
+
+/* Share Button & Cleanliness */
+.topic-share-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px;
+    transition: color 0.2s;
+}
+
+.topic-share-btn:hover {
+    color: var(--accent-purple);
+}
+
+.no-messages {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 40px;
+    font-style: italic;
+}
+
+
+/* Profile Anchor Fix */
+#profile {
+    scroll-margin-top: 100px;
 }
