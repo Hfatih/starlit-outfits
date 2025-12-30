@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Paneli - Starlit</title>
+    <meta name="description" content="Starlit Admin Paneli - Moderasyon ve yönetim">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="admin-body">
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-tshirt"></i>
+                </div>
+                <span class="logo-text">Starlit Admin</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="sidebar-link active" data-section="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#moderation" class="sidebar-link" data-section="moderation">
+                <i class="fas fa-check-circle"></i>
+                <span>Moderasyon</span>
+                <span class="sidebar-badge" id="pendingCount">5</span>
+            </a>
+            <a href="#users" class="sidebar-link" data-section="users">
+                <i class="fas fa-users"></i>
+                <span>Kullanıcılar</span>
+            </a>
+            <a href="#content" class="sidebar-link" data-section="content">
+                <i class="fas fa-folder-open"></i>
+                <span>İçerikler</span>
+            </a>
+            <a href="#reports" class="sidebar-link" data-section="reports">
+                <i class="fas fa-flag"></i>
+                <span>Raporlar</span>
+            </a>
+            <a href="#settings" class="sidebar-link" data-section="settings">
+                <i class="fas fa-cog"></i>
+                <span>Ayarlar</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="index.html" class="sidebar-back">
+                <i class="fas fa-arrow-left"></i>
+                <span>Siteye Dön</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Admin Main Content -->
+    <main class="admin-main">
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="admin-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Ara...">
+            </div>
+            <div class="admin-user">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+                <div class="user-profile">
+                    <div class="user-avatar">BY</div>
+                    <span class="user-name">ByFatih</span>
+                    <span class="user-role">Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Section -->
+        <section class="admin-section active" id="dashboard">
+            <div class="section-header">
+                <h1>Dashboard</h1>
+                <p>Site istatistiklerine genel bakış</p>
+            </div>
+
+            <div class="stats-cards">
+                <div class="stat-card blue">
+                    <div class="stat-icon">
+                        <i class="fas fa-shirt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-number">253</span>
+                        <span class="stat-label">Toplam Kombin</span>
+                    </div>
+                </div>
+                <div class="stat-card purple">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-number">89</span>
+                        <span class="stat-label">Toplam Yüz</span>
+                    </div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-number">1,247</span>
+                        <span class="stat-label">Toplam Kullanıcı</span>
+                    </div>
+                </div>
+                <div class="stat-card orange">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">Bekleyen Onay</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3><i class="fas fa-chart-line"></i> Son 7 Gün Aktivite</h3>
+                    <div class="chart-placeholder">
+                        <div class="chart-bars" id="activityChart">
+                            <!-- Will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3><i class="fas fa-clock"></i> Son Yüklemeler</h3>
+                    <div class="recent-items">
+                        <!-- Will be populated by renderRecentUploads() -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Period Stats -->
+            <div class="period-stats">
+                <div class="period-stat-card">
+                    <h4><i class="fas fa-calendar-week"></i> Geçen Hafta</h4>
+                    <div class="period-stat-grid">
+                        <div class="period-stat">
+                            <span class="period-number" id="lastWeekContent">0</span>
+                            <span class="period-label">Yeni İçerik</span>
+                        </div>
+                        <div class="period-stat">
+                            <span class="period-number" id="lastWeekUsers">0</span>
+                            <span class="period-label">Yeni Kullanıcı</span>
+                        </div>
+                        <div class="period-stat">
+                            <span class="period-number" id="lastWeekViews">0</span>
+                            <span class="period-label">Görüntülenme</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="period-stat-card">
+                    <h4><i class="fas fa-calendar-alt"></i> Geçen Ay</h4>
+                    <div class="period-stat-grid">
+                        <div class="period-stat">
+                            <span class="period-number" id="lastMonthContent">0</span>
+                            <span class="period-label">Yeni İçerik</span>
+                        </div>
+                        <div class="period-stat">
+                            <span class="period-number" id="lastMonthUsers">0</span>
+                            <span class="period-label">Yeni Kullanıcı</span>
+                        </div>
+                        <div class="period-stat">
+                            <span class="period-number" id="lastMonthViews">0</span>
+                            <span class="period-label">Görüntülenme</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Moderation Section -->
+        <section class="admin-section" id="moderation">
+            <div class="section-header">
+                <h1>Moderasyon</h1>
+                <p>Onay bekleyen içerikleri yönetin</p>
+            </div>
+
+            <div class="moderation-tabs">
+                <button class="mod-tab active" data-filter="all">Tümü (<span id="modAllCount">0</span>)</button>
+                <button class="mod-tab" data-filter="kombins">Kombinler (<span id="modKombinCount">0</span>)</button>
+                <button class="mod-tab" data-filter="faces">Yüzler (<span id="modFaceCount">0</span>)</button>
+                <button class="mod-tab" data-filter="animations">Animasyonlar (<span
+                        id="modAnimCount">0</span>)</button>
+            </div>
+
+            <div class="moderation-list" id="moderationList">
+                <!-- Pending items -->
+                <div class="moderation-item" data-id="1" data-type="kombin">
+                    <div class="mod-image">
+                        <img src="https://images.unsplash.com/photo-1485968579580-b6d095142e6e?w=100&h=130&fit=crop"
+                            alt="">
+                    </div>
+                    <div class="mod-info">
+                        <h4>Yazlık Elbise Kombini</h4>
+                        <p>Yaz mevsimi için ideal, şık ve rahat bir kombin.</p>
+                        <div class="mod-meta">
+                            <span><i class="fas fa-user"></i> SummerGirl</span>
+                            <span><i class="fas fa-clock"></i> 30 dk önce</span>
+                            <span><i class="fas fa-tag"></i> Kadın</span>
+                        </div>
+                    </div>
+                    <div class="mod-actions">
+                        <button class="mod-btn approve" onclick="approveItem(1)">
+                            <i class="fas fa-check"></i> Onayla
+                        </button>
+                        <button class="mod-btn reject" onclick="rejectItem(1)">
+                            <i class="fas fa-times"></i> Reddet
+                        </button>
+                        <button class="mod-btn preview" onclick="previewItem(1)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="moderation-item" data-id="2" data-type="kombin">
+                    <div class="mod-image">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=130&fit=crop"
+                            alt="">
+                    </div>
+                    <div class="mod-info">
+                        <h4>Erkek Casual Stil</h4>
+                        <p>Günlük kullanım için rahat ve modern erkek kombini.</p>
+                        <div class="mod-meta">
+                            <span><i class="fas fa-user"></i> StreetStyle</span>
+                            <span><i class="fas fa-clock"></i> 1 saat önce</span>
+                            <span><i class="fas fa-tag"></i> Erkek</span>
+                        </div>
+                    </div>
+                    <div class="mod-actions">
+                        <button class="mod-btn approve" onclick="approveItem(2)">
+                            <i class="fas fa-check"></i> Onayla
+                        </button>
+                        <button class="mod-btn reject" onclick="rejectItem(2)">
+                            <i class="fas fa-times"></i> Reddet
+                        </button>
+                        <button class="mod-btn preview" onclick="previewItem(2)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="moderation-item" data-id="3" data-type="face">
+                    <div class="mod-image">
+                        <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=130&fit=crop"
+                            alt="">
+                    </div>
+                    <div class="mod-info">
+                        <h4>Doğal Güzellik Yüzü</h4>
+                        <p>Doğal ve sade bir kadın yüz kodu.</p>
+                        <div class="mod-meta">
+                            <span><i class="fas fa-user"></i> NaturalBeauty</span>
+                            <span><i class="fas fa-clock"></i> 2 saat önce</span>
+                            <span><i class="fas fa-tag"></i> Kadın</span>
+                        </div>
+                    </div>
+                    <div class="mod-actions">
+                        <button class="mod-btn approve" onclick="approveItem(3)">
+                            <i class="fas fa-check"></i> Onayla
+                        </button>
+                        <button class="mod-btn reject" onclick="rejectItem(3)">
+                            <i class="fas fa-times"></i> Reddet
+                        </button>
+                        <button class="mod-btn preview" onclick="previewItem(3)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Users Section -->
+        <section class="admin-section" id="users">
+            <div class="section-header">
+                <h1>Kullanıcı Yönetimi</h1>
+                <p>Tüm kullanıcıları yönetin</p>
+                <button class="primary-btn" id="addUserBtn">
+                    <i class="fas fa-plus"></i> Yeni Kullanıcı
+                </button>
+            </div>
+
+            <div class="users-table-container">
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>Kullanıcı</th>
+                            <th>E-posta</th>
+                            <th>Rol</th>
+                            <th>Kayıt Tarihi</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar">BY</div>
+                                    <span>ByFatih</span>
+                                </div>
+                            </td>
+                            <td>byfatih@example.com</td>
+                            <td><span class="role-badge admin">Admin</span></td>
+                            <td>15.12.2024</td>
+                            <td><span class="status-badge active">Aktif</span></td>
+                            <td>
+                                <button class="table-btn edit"><i class="fas fa-edit"></i></button>
+                                <button class="table-btn delete"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar">XR</div>
+                                    <span>xRiot</span>
+                                </div>
+                            </td>
+                            <td>xriot@example.com</td>
+                            <td><span class="role-badge moderator">Moderatör</span></td>
+                            <td>20.12.2024</td>
+                            <td><span class="status-badge active">Aktif</span></td>
+                            <td>
+                                <button class="table-btn edit"><i class="fas fa-edit"></i></button>
+                                <button class="table-btn delete"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar">EL</div>
+                                    <span>Edward_Lucania</span>
+                                </div>
+                            </td>
+                            <td>edward@example.com</td>
+                            <td><span class="role-badge user">Kullanıcı</span></td>
+                            <td>22.12.2024</td>
+                            <td><span class="status-badge active">Aktif</span></td>
+                            <td>
+                                <button class="table-btn edit"><i class="fas fa-edit"></i></button>
+                                <button class="table-btn delete"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar">BQ</div>
+                                    <span>BeachQueen</span>
+                                </div>
+                            </td>
+                            <td>beach@example.com</td>
+                            <td><span class="role-badge user">Kullanıcı</span></td>
+                            <td>23.12.2024</td>
+                            <td><span class="status-badge inactive">Pasif</span></td>
+                            <td>
+                                <button class="table-btn edit"><i class="fas fa-edit"></i></button>
+                                <button class="table-btn delete"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Content Section -->
+        <section class="admin-section" id="content">
+            <div class="section-header">
+                <h1>İçerik Yönetimi</h1>
+                <p>Tüm kombinleri ve yüzleri yönetin</p>
+            </div>
+
+            <div class="content-tabs">
+                <button class="content-tab active" data-type="kombinler">Kombinler (<span
+                        id="kombinlerCount">0</span>)</button>
+                <button class="content-tab" data-type="yuzler">Yüzler (<span id="yuzlerCount">0</span>)</button>
+                <button class="content-tab" data-type="animasyonlar">Animasyonlar (<span
+                        id="animasyonlarCount">0</span>)</button>
+            </div>
+
+            <div class="content-filters">
+                <input type="text" placeholder="İçerik ara..." class="content-search">
+                <select class="content-filter">
+                    <option value="all">Tüm Durumlar</option>
+                    <option value="approved">Onaylanmış</option>
+                    <option value="pending">Beklemede</option>
+                    <option value="rejected">Reddedilmiş</option>
+                </select>
+            </div>
+
+            <div class="content-grid" id="contentGrid">
+                <!-- Content items will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Reports Section -->
+        <section class="admin-section" id="reports">
+            <div class="section-header">
+                <h1>Raporlar</h1>
+                <p>Kullanıcı raporlarını inceleyin</p>
+            </div>
+
+            <div class="reports-list">
+                <div class="report-item">
+                    <div class="report-icon warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="report-info">
+                        <h4>Uygunsuz İçerik Raporu</h4>
+                        <p>"Yazlık Kombin #45" içeriği için rapor</p>
+                        <span class="report-meta">Raporlayan: user123 • 1 saat önce</span>
+                    </div>
+                    <div class="report-actions">
+                        <button class="report-btn view">İncele</button>
+                        <button class="report-btn dismiss">Kapat</button>
+                    </div>
+                </div>
+
+                <div class="report-item">
+                    <div class="report-icon danger">
+                        <i class="fas fa-ban"></i>
+                    </div>
+                    <div class="report-info">
+                        <h4>Spam Raporu</h4>
+                        <p>"Cheap outfits here!" içeriği için rapor</p>
+                        <span class="report-meta">Raporlayan: moderator1 • 3 saat önce</span>
+                    </div>
+                    <div class="report-actions">
+                        <button class="report-btn view">İncele</button>
+                        <button class="report-btn dismiss">Kapat</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section class="admin-section" id="settings">
+            <div class="section-header">
+                <h1>Ayarlar</h1>
+                <p>Site ayarlarını düzenleyin</p>
+            </div>
+
+            <div class="settings-grid">
+                <div class="settings-card">
+                    <h3><i class="fas fa-globe"></i> Genel Ayarlar</h3>
+                    <div class="settings-form">
+                        <div class="setting-item">
+                            <label>Site Adı</label>
+                            <input type="text" id="siteName" value="Starlit">
+                        </div>
+                        <div class="setting-item">
+                            <label>Site Açıklaması</label>
+                            <textarea
+                                id="siteDescription">En iyi kıyafet kombinlerini keşfedin, paylaşın ve kendi kombinlerinizi yükleyin.</textarea>
+                        </div>
+                        <div class="setting-item">
+                            <label>Bakım Modu</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="maintenanceMode">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>Tahmini Süre</label>
+                            <input type="text" id="maintenanceEstimate" placeholder="~30 Dakika" value="30 Dakika">
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3><i class="fas fa-shield-alt"></i> Moderasyon Ayarları</h3>
+                        <div class="settings-form">
+                            <div class="setting-item">
+                                <label>Otomatik Onay</label>
+                                <label class="toggle">
+                                    <input type="checkbox">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>Günlük Yükleme Limiti</label>
+                                <input type="number" value="5">
+                            </div>
+                            <div class="setting-item">
+                                <label>Yasaklı Kelimeler</label>
+                                <textarea placeholder="Her satıra bir kelime yazın..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3><i class="fab fa-discord"></i> Discord Entegrasyonu</h3>
+                        <div class="settings-form">
+                            <div class="setting-item">
+                                <label>Discord Sunucu Davet URL</label>
+                                <input type="text" id="discordInviteUrl" placeholder="https://discord.gg/..."
+                                    value="https://discord.gg/starlit">
+                            </div>
+                            <div class="setting-item">
+                                <label>Discord Webhook URL</label>
+                                <input type="text" id="discordWebhook"
+                                    placeholder="https://discord.com/api/webhooks/...">
+                            </div>
+                            <div class="setting-item">
+                                <label>Yeni Yüklemeleri Bildir</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="notifyUploads" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="settings-card">
+                        <h3><i class="fas fa-user-shield"></i> Moderatör Yetkileri</h3>
+                        <div class="settings-form">
+                            <div class="setting-item">
+                                <label>İçerik Onaylama</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="modCanApprove" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>İçerik Silme</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="modCanDelete" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>Konu Kilitleme</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="modCanLock" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>Kullanıcı Yasaklama</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="modCanBan">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>Kullanıcı Düzenleme</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="modCanEditUsers">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="save-settings-btn">
+                    <i class="fas fa-save"></i> Ayarları Kaydet
+                </button>
+        </section>
+    </main>
+
+    <!-- Add User Modal -->
+    <div class="modal-overlay" id="addUserModal">
+        <div class="admin-modal">
+            <button class="modal-close" id="closeUserModal">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2><i class="fas fa-user-plus"></i> Yeni Kullanıcı Ekle</h2>
+            <form id="addUserForm">
+                <div class="form-group">
+                    <label>Kullanıcı Adı *</label>
+                    <input type="text" id="newUsername" required placeholder="Kullanıcı adı girin">
+                </div>
+                <div class="form-group">
+                    <label>E-posta *</label>
+                    <input type="email" id="newEmail" required placeholder="E-posta girin">
+                </div>
+                <div class="form-group">
+                    <label>Şifre *</label>
+                    <input type="password" id="newPassword" required placeholder="Şifre girin">
+                </div>
+                <div class="form-group">
+                    <label>Rol *</label>
+                    <select id="newRole" required>
+                        <option value="user">Kullanıcı</option>
+                        <option value="moderator">Moderatör</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-plus"></i> Kullanıcı Ekle
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">İşlem başarılı!</span>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal-overlay" id="editUserModal">
+        <div class="admin-modal">
+            <button class="modal-close" id="closeEditModal">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2><i class="fas fa-user-edit"></i> Kullanıcı Düzenle</h2>
+            <form id="editUserForm">
+                <input type="hidden" id="editUserId">
+                <div class="form-group">
+                    <label>Kullanıcı Adı</label>
+                    <input type="text" id="editUsername" required>
+                </div>
+                <div class="form-group">
+                    <label>E-posta</label>
+                    <input type="email" id="editEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Rol</label>
+                    <select id="editRole">
+                        <option value="user">Kullanıcı</option>
+                        <option value="moderator">Moderatör</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Durum</label>
+                    <select id="editStatus">
+                        <option value="active">Aktif</option>
+                        <option value="inactive">Pasif</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-save"></i> Kaydet
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirm Modal -->
+    <div class="modal-overlay" id="deleteConfirmModal">
+        <div class="admin-modal">
+            <h2><i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i> Kullanıcıyı Sil</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">Bu kullanıcıyı silmek istediğinizden emin
+                misiniz? Bu işlem geri alınamaz.</p>
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button class="mod-btn preview" id="cancelDelete">İptal</button>
+                <button class="mod-btn reject" id="confirmDelete"><i class="fas fa-trash"></i> Sil</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="database.js"></script>
+    <script src="admin.js"></script>
+</body>
+
+</html>

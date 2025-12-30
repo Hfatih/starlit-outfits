@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starlit - Animasyonlar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="forum-body">
+    <!-- Forum Layout -->
+    <div class="forum-layout">
+        <!-- Left Sidebar - Topic List -->
+        <aside class="forum-sidebar">
+            <div class="forum-sidebar-header">
+                <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+                <div class="forum-title-icon"><i class="fas fa-film"></i></div>
+                <span class="forum-title-text">ANİMASYONLAR</span>
+            </div>
+
+            <div class="forum-search-bar">
+                <input type="text" id="topicSearch" placeholder="Starlit'te ara...">
+            </div>
+
+            <button class="new-topic-btn" id="newTopicBtn">
+                <i class="fas fa-plus"></i> Yeni Gönderi
+            </button>
+
+            <div class="forum-sort">
+                <button class="sort-dropdown-btn" id="sortDropdownBtn">
+                    <i class="fas fa-sort"></i> Sırala ve Görüntüle
+                </button>
+                <div class="sort-dropdown" id="sortDropdown">
+                    <button data-sort="newest">En Yeni</button>
+                    <button data-sort="oldest">En Eski</button>
+                    <button data-sort="comments">En Çok Yorum</button>
+                </div>
+            </div>
+
+            <!-- Topics List - Populated by JS from StarlitDB.topics -->
+            <div class="topics-list" id="topicsList">
+                <!-- Will be populated by renderTopicsList() in animasyonlar.js -->
+            </div>
+        </aside>
+
+        <!-- Right Content - Chat View -->
+        <main class="forum-content">
+            <div class="chat-header">
+                <h2 id="chatTitle">femalepose (1-376)</h2>
+                <div class="chat-header-info" id="chatInfo" style="display: none;">Bu gönderi kapatıldı ve kilitlendi.
+                    Yalnızca moderatörler tekrar açabilir.</div>
+                <div class="chat-actions">
+                    <button class="chat-action-btn pin-btn" id="pinBtn" title="Başa Tuttur"><i
+                            class="fas fa-thumbtack"></i></button>
+                    <button class="chat-action-btn lock-btn" id="lockBtn" title="Kilitle/Aç"><i
+                            class="fas fa-lock"></i></button>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will be populated by JS -->
+            </div>
+
+            <div class="chat-input-area" id="chatInputArea">
+                <button class="chat-attach-btn" id="attachBtn"><i class="fas fa-plus"></i></button>
+                <input type="file" id="chatImageInput" accept="image/*" hidden>
+                <input type="text" id="chatInput" placeholder="Bu kanala mesaj gönder...">
+                <button class="chat-send-btn" id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </main>
+    </div>
+
+    <!-- New Topic Modal -->
+    <div class="modal" id="newTopicModal">
+        <div class="modal-content forum-modal">
+            <button class="modal-close" id="closeTopicModal"><i class="fas fa-times"></i></button>
+            <h2><i class="fas fa-plus-circle"></i> Yeni Gönderi Oluştur</h2>
+            <form id="newTopicForm">
+                <div class="form-group">
+                    <label>Başlık</label>
+                    <input type="text" id="topicTitle" placeholder="Gönderi başlığı" required>
+                </div>
+                <div class="form-group">
+                    <label>Meltsable Kodu</label>
+                    <input type="text" id="topicCode" placeholder="örn: femalepose">
+                </div>
+                <div class="form-group">
+                    <label>Görsel</label>
+                    <div class="image-upload-area" id="topicImageArea">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Fotoğraf yüklemek için tıklayın</p>
+                    </div>
+                    <input type="file" id="topicImage" accept="image/*" hidden>
+                    <div class="image-preview" id="topicImagePreview">
+                        <img id="topicPreviewImg" src="" alt="">
+                        <button type="button" class="remove-image" id="removeTopicImage"><i
+                                class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn"><i class="fas fa-paper-plane"></i> Paylaş</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">İşlem başarılı!</span>
+    </div>
+
+    <script src="database.js"></script>
+    <script src="animasyonlar.js"></script>
+</body>
+
+</html>

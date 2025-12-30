@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starlit - Giriş Yap</title>
+    <meta name="description" content="Starlit platformuna giriş yapın">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="login-body">
+    <!-- Header -->
+    <header class="login-header">
+        <a href="giris.html" class="logo">
+            <div class="logo-icon"><i class="fas fa-tshirt"></i></div>
+            <span class="logo-text">Starlit</span>
+        </a>
+        <button class="login-header-btn"
+            onclick="document.getElementById('loginSection').scrollIntoView({behavior: 'smooth'})">
+            <i class="fas fa-sign-in-alt"></i> Giriş Yap
+        </button>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="login-hero">
+        <h1 class="hero-title">Starlit</h1>
+        <p class="hero-subtitle">Benzersiz kombinlerin dünyasına hoş geldiniz</p>
+        <p class="hero-description">Profesyonel tasarımcılar ve oyuncular tarafından hazırlanmış binlerce kombinasyon
+            koleksiyonunu keşfedin, paylaşın, kendi özel görünümlerinizi oluşturun.</p>
+        <div class="hero-buttons">
+            <button class="hero-btn primary"
+                onclick="document.getElementById('loginSection').scrollIntoView({behavior: 'smooth'})">
+                <i class="fas fa-sign-in-alt"></i> Giriş Yap
+            </button>
+            <a href="#" class="hero-btn secondary" id="discordBtn">
+                <i class="fab fa-discord"></i> Topluluğa Katıl
+            </a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <h2 class="section-title">Platform Özellikleri</h2>
+        <p class="section-subtitle">Starlit'in profesyonel özelliklerini ve benzersiz fonksiyonlarını keşfedin.</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon purple"><i class="fas fa-tshirt"></i></div>
+                <h3>Kaliteli Kombinler</h3>
+                <p>Profesyonel tasarımcılar ve tecrübeli kullanıcılar tarafından hazırlanmış yüksek kaliteli kombinler.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon cyan"><i class="fas fa-check-circle"></i></div>
+                <h3>Aktif Topluluk</h3>
+                <p>Yüzlerce aktif kullanıcı ile sürekli güncellenen, aktif ve canlı bir topluluk ortamı.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon pink"><i class="fas fa-bolt"></i></div>
+                <h3>Kolay Paylaşım</h3>
+                <p>Hızlı ve kolaycılığıyla dikkat çeken, kullanıcı dostu kombin paylaşım sistemi.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon green"><i class="fas fa-shield-alt"></i></div>
+                <h3>Güvenli Platform</h3>
+                <p>Modern güvenlik önlemleriyle korunan, güvenilir ve stabil bir platform altyapısı.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon orange"><i class="fas fa-rocket"></i></div>
+                <h3>Hızlı Erişim</h3>
+                <p>Aradığınız için kolayca bulmanızı sağlayan, etkili arama ve filtreleme özellikleri.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon red"><i class="fas fa-star"></i></div>
+                <h3>Planlara Katılış</h3>
+                <p>İçerik katkılarını ödüllendiren, motive edici puan ve rozet sistemi.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <h2 class="section-title">Platform İstatistikleri</h2>
+        <p class="section-subtitle">Büyüyen topluluğumuzun bir parçası olun.</p>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <span class="stat-value" id="statKombins">0</span>
+                <span class="stat-label">Aktif Kombin</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="statLikes">0</span>
+                <span class="stat-label">Beğeni Sayısı</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="statViews">0</span>
+                <span class="stat-label">İzlenme</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="statRating">4.9/5</span>
+                <span class="stat-label">Kullanıcı Puanı</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Best of Week -->
+    <section class="best-week-section">
+        <h2 class="section-title">Haftanın En İyisi</h2>
+        <p class="section-subtitle">Son haftanın en beğenilen kombinasyonu</p>
+        <div class="best-week-card" id="bestWeekCard">
+            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=150&h=200&fit=crop"
+                alt="Haftanın En İyisi" class="best-week-image" id="bestWeekImage">
+            <div class="best-week-info">
+                <span class="best-week-badge">Haftanın En İyisi</span>
+                <h3 id="bestWeekTitle">"Henüz İçerik Yok"</h3>
+                <div class="best-week-creator">
+                    <div class="creator-avatar" id="bestWeekAvatar">--</div>
+                    <span id="bestWeekCreator">-</span>
+                </div>
+                <div class="best-week-stats">
+                    <span><i class="fas fa-heart"></i> <span id="bestWeekLikes">0</span> beğeni</span>
+                    <span><i class="fas fa-comment"></i> <span id="bestWeekComments">0</span> Yorum</span>
+                    <span><i class="fas fa-eye"></i> <span id="bestWeekViews">0</span> Görüntülenme</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Section -->
+    <section class="login-section" id="loginSection">
+        <div class="login-card">
+            <h2><i class="fas fa-sign-in-alt"></i> Giriş Yap</h2>
+            <p>Starlit hesabınıza giriş yapın</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Kullanıcı Adı</label>
+                    <input type="text" id="username" placeholder="Kullanıcı adınızı girin" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Şifre</label>
+                    <input type="password" id="password" placeholder="Şifrenizi girin" required>
+                </div>
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        <span>Beni Hatırla</span>
+                    </label>
+                    <a href="#" class="forgot-password">Şifremi Unuttum</a>
+                </div>
+                <button type="submit" class="login-submit-btn">
+                    <i class="fas fa-sign-in-alt"></i> Giriş Yap
+                </button>
+            </form>
+            <div class="register-link">
+                Hesabınız yok mu? <a href="#">Kayıt Ol</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="login-footer">
+        <p>&copy; 2025 Starlit. Tüm hakları saklıdır.</p>
+    </footer>
+
+    <script src="database.js"></script>
+    <script src="giris.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starlit - Bildirimler</title>
+    <meta name="description" content="Starlit bildirimlerinizi görüntüleyin">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon"><i class="fas fa-tshirt"></i></div>
+                <span class="logo-text">Starlit</span>
+            </a>
+
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Anasayfa</span>
+                </a>
+                <a href="kombinler.html" class="nav-link">
+                    <i class="fas fa-shirt"></i>
+                    <span>Kombinler</span>
+                </a>
+                <a href="yuzler.html" class="nav-link">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Yüzler</span>
+                </a>
+                <a href="yukle.html" class="nav-link">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Yükle</span>
+                </a>
+                <a href="#profile" class="nav-link">
+                    <i class="fas fa-user"></i>
+                    <span>Profilim</span>
+                </a>
+                <a href="animasyonlar.html" class="nav-link">
+                    <i class="fas fa-film"></i>
+                    <span>Animasyonlar</span>
+                </a>
+            </nav>
+
+            <div class="header-actions">
+                <button class="notification-btn active" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notifBadge">0</span>
+                </button>
+                <button class="settings-btn">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <div class="user-profile">
+                    <div class="user-avatar">BY</div>
+                    <span class="user-name">ByFatih</span>
+                </div>
+                <a href="admin.html" class="admin-btn" title="Admin Paneli">
+                    <i class="fas fa-shield-alt"></i>
+                </a>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Çıkış</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <section class="page-header">
+            <h1><i class="fas fa-bell"></i> Bildirimler</h1>
+            <p>Tüm bildirimlerinizi buradan takip edin</p>
+        </section>
+
+        <div class="notifications-container">
+            <div class="notifications-actions">
+                <button class="action-btn" id="markAllReadBtn">
+                    <i class="fas fa-check-double"></i> Tümünü Okundu İşaretle
+                </button>
+                <button class="action-btn secondary" id="clearAllBtn">
+                    <i class="fas fa-trash"></i> Tümünü Temizle
+                </button>
+            </div>
+
+            <div class="notifications-list" id="notificationsList">
+                <!-- Notifications will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 Starlit. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">İşlem başarılı!</span>
+    </div>
+
+    <script src="database.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNotifications();
+            initActions();
+        });
+
+        function renderNotifications() {
+            const list = document.getElementById('notificationsList');
+            const notifications = StarlitDB.getNotifications().sort((a, b) =>
+                new Date(b.createdAt) - new Date(a.createdAt)
+            );
+
+            if (notifications.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bell-slash"></i>
+                        <h3>Bildirim Yok</h3>
+                        <p>Henüz bildiriminiz bulunmuyor.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = notifications.map(notif => {
+                const iconClass = notif.type === 'like' ? 'fa-heart' :
+                    notif.type === 'comment' ? 'fa-comment' :
+                        notif.type === 'approve' ? 'fa-check' : 'fa-bell';
+                const typeClass = notif.type;
+                const time = formatTime(notif.createdAt);
+
+                return `
+                    <div class="notification-card ${notif.read ? '' : 'unread'}" data-id="${notif.id}">
+                        <div class="notif-icon ${typeClass}">
+                            <i class="fas ${iconClass}"></i>
+                        </div>
+                        <div class="notif-body">
+                            <p class="notif-message">${notif.message}</p>
+                            <span class="notif-time"><i class="fas fa-clock"></i> ${time}</span>
+                        </div>
+                        <button class="notif-delete" onclick="deleteNotification(${notif.id})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function formatTime(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+
+            if (diff < 60) return 'Şimdi';
+            if (diff < 3600) return `${Math.floor(diff / 60)} dakika önce`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)} saat önce`;
+            return `${Math.floor(diff / 86400)} gün önce`;
+        }
+
+        function initActions() {
+            document.getElementById('markAllReadBtn')?.addEventListener('click', () => {
+                StarlitDB.markAllRead();
+                document.querySelectorAll('.notification-card.unread').forEach(card => {
+                    card.classList.remove('unread');
+                });
+                showToast('Tüm bildirimler okundu olarak işaretlendi.');
+            });
+
+            document.getElementById('clearAllBtn')?.addEventListener('click', () => {
+                if (confirm('Tüm bildirimleri silmek istediğinizden emin misiniz?')) {
+                    const user = StarlitDB.getCurrentUser();
+                    if (user) {
+                        StarlitDB.notifications = StarlitDB.notifications.filter(n => n.userId !== user.id);
+                        StarlitDB.save();
+                        renderNotifications();
+                        showToast('Tüm bildirimler silindi.');
+                    }
+                }
+            });
+        }
+
+        window.deleteNotification = function (id) {
+            const index = StarlitDB.notifications.findIndex(n => n.id === id);
+            if (index > -1) {
+                StarlitDB.notifications.splice(index, 1);
+                StarlitDB.save();
+                document.querySelector(`.notification-card[data-id="${id}"]`)?.remove();
+                showToast('Bildirim silindi.');
+            }
+        };
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+
+</html>

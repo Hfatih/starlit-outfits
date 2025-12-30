@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starlit - Bakım Modu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .bg-animation span {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            opacity: 0.1;
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+
+        .bg-animation span:nth-child(1) {
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .bg-animation span:nth-child(2) {
+            left: 20%;
+            animation-delay: 2s;
+            width: 30px;
+            height: 30px;
+        }
+
+        .bg-animation span:nth-child(3) {
+            left: 35%;
+            animation-delay: 4s;
+        }
+
+        .bg-animation span:nth-child(4) {
+            left: 50%;
+            animation-delay: 0s;
+            width: 40px;
+            height: 40px;
+        }
+
+        .bg-animation span:nth-child(5) {
+            left: 65%;
+            animation-delay: 6s;
+        }
+
+        .bg-animation span:nth-child(6) {
+            left: 75%;
+            animation-delay: 3s;
+            width: 25px;
+            height: 25px;
+        }
+
+        .bg-animation span:nth-child(7) {
+            left: 90%;
+            animation-delay: 7s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.1;
+            }
+
+            90% {
+                opacity: 0.1;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            text-align: center;
+            z-index: 1;
+            padding: 40px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .logo-text {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .icon-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        .icon-container i {
+            font-size: 48px;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                border-color: rgba(139, 92, 246, 0.3);
+            }
+
+            50% {
+                transform: scale(1.05);
+                border-color: rgba(139, 92, 246, 0.6);
+            }
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        h1 span {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 40px;
+            max-width: 500px;
+        }
+
+        .progress-bar {
+            width: 300px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin: 0 auto 30px;
+            overflow: hidden;
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            width: 60%;
+            background: linear-gradient(90deg, #8b5cf6, #ec4899);
+            border-radius: 3px;
+            animation: progress 2s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+            0% {
+                width: 0%;
+            }
+
+            50% {
+                width: 70%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        .info-cards {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px 30px;
+            text-align: left;
+        }
+
+        .info-card i {
+            color: #8b5cf6;
+            margin-right: 8px;
+        }
+
+        .info-card h3 {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 4px;
+        }
+
+        .info-card p {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .social-links {
+            margin-top: 50px;
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .social-links a {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 20px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            border-color: transparent;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Discord specific styling */
+        .discord-btn {
+            background: rgba(88, 101, 242, 0.1);
+            border-color: rgba(88, 101, 242, 0.3);
+        }
+
+        .discord-btn:hover {
+            background: #5865F2 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="container">
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-tshirt"></i></div>
+            <span class="logo-text">Starlit</span>
+        </div>
+
+        <div class="icon-container">
+            <i class="fas fa-tools"></i>
+        </div>
+
+        <h1>Bakım <span>Modundayız</span></h1>
+        <p class="subtitle">Sizlere daha iyi hizmet verebilmek için sitemizi güncelliyoruz. Kısa bir süre sonra geri
+            döneceğiz!</p>
+
+        <div class="progress-bar">
+            <div class="fill"></div>
+        </div>
+
+        <div class="info-cards">
+            <div class="info-card">
+                <h3><i class="fas fa-clock"></i> Tahmini Süre</h3>
+                <p id="estimatedTime">~30 Dakika</p>
+            </div>
+            <div class="info-card">
+                <h3><i class="fas fa-wrench"></i> Durum</h3>
+                <p>Güncelleme Yapılıyor</p>
+            </div>
+        </div>
+
+        <div class="social-links">
+            <a href="#" id="discordLink" class="discord-btn"><i class="fab fa-discord"></i></a>
+        </div>
+    </div>
+
+    <script>
+        // Load settings from database
+        const saved = localStorage.getItem('starlitDatabase');
+        if (saved) {
+            const data = JSON.parse(saved);
+            // Discord URL from settings
+            if (data.settings?.discordInviteUrl) {
+                document.getElementById('discordLink').href = data.settings.discordInviteUrl;
+            }
+            // Estimated time from settings
+            if (data.settings?.maintenanceEstimate) {
+                document.getElementById('estimatedTime').textContent = '~' + data.settings.maintenanceEstimate;
+            }
+        }
+    </script>
+</body>
+
+</html>

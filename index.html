@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starlit - Anasayfa</title>
+    <meta name="description" content="En iyi kıyafet kombinlerini keşfedin, paylaşın ve kendi kombinlerinizi yükleyin.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Header / Navigation -->
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-tshirt"></i>
+                </div>
+                <span class="logo-text">Starlit</span>
+            </a>
+
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    <span>Anasayfa</span>
+                </a>
+                <a href="kombinler.html" class="nav-link">
+                    <i class="fas fa-shirt"></i>
+                    <span>Kombinler</span>
+                </a>
+                <a href="yuzler.html" class="nav-link">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Yüzler</span>
+                </a>
+                <a href="yukle.html" class="nav-link">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Yükle</span>
+                </a>
+                <a href="#profile" class="nav-link">
+                    <i class="fas fa-user"></i>
+                    <span>Profilim</span>
+                </a>
+                <a href="animasyonlar.html" class="nav-link">
+                    <i class="fas fa-film"></i>
+                    <span>Animasyonlar</span>
+                </a>
+            </nav>
+
+            <div class="header-actions">
+                <div class="notification-wrapper">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notifBadge">3</span>
+                    </button>
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notif-header">
+                            <h4>Bildirimler</h4>
+                            <button class="mark-read-btn" id="markAllRead">Tümünü Okundu İşaretle</button>
+                        </div>
+                        <div class="notif-list" id="notifList">
+                            <div class="notif-item unread" data-id="1">
+                                <div class="notif-icon like"><i class="fas fa-heart"></i></div>
+                                <div class="notif-content">
+                                    <p><strong>xRiot</strong> kombinini beğendi</p>
+                                    <span class="notif-time">5 dakika önce</span>
+                                </div>
+                            </div>
+                            <div class="notif-item unread" data-id="2">
+                                <div class="notif-icon comment"><i class="fas fa-comment"></i></div>
+                                <div class="notif-content">
+                                    <p><strong>BeachQueen</strong> yorum yaptı</p>
+                                    <span class="notif-time">1 saat önce</span>
+                                </div>
+                            </div>
+                            <div class="notif-item unread" data-id="3">
+                                <div class="notif-icon approve"><i class="fas fa-check"></i></div>
+                                <div class="notif-content">
+                                    <p>Kombinin <strong>onaylandı</strong></p>
+                                    <span class="notif-time">2 saat önce</span>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="bildirimler.html" class="notif-see-all">Tüm Bildirimleri Gör</a>
+                    </div>
+                </div>
+                <button class="settings-btn">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <div class="user-profile">
+                    <div class="user-avatar" id="headerUserAvatar">--</div>
+                    <span class="user-name" id="headerUserName">Yükleniyor...</span>
+                </div>
+                <a href="admin.html" class="admin-btn" title="Admin Paneli">
+                    <i class="fas fa-shield-alt"></i>
+                </a>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Çıkış</span>
+                </button>
+            </div>
+
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Welcome Section -->
+        <section class="welcome-section">
+            <div class="welcome-avatar" id="welcomeAvatar">--</div>
+            <h1 class="welcome-title">Hoş Geldin, <span class="gradient-text" id="welcomeName">Yükleniyor...</span></h1>
+            <p class="welcome-subtitle">Starlit dünyasında yaratıcılığını keşfet! Kombinleri incele, paylaş ve
+                topluluğumuzla etkileşim hal.</p>
+        </section>
+
+        <!-- Best of Week -->
+        <section class="best-of-week" id="bestOfWeekSection">
+            <div class="best-card">
+                <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=300&h=400&fit=crop"
+                    alt="Haftanın En İyisi" class="best-image" id="bestImage">
+                <div class="best-info">
+                    <h3 class="best-title">Haftanın En İyisi</h3>
+                    <p class="best-outfit-name" id="bestOutfitName">"Yükleniyor..."</p>
+                    <div class="best-creator">
+                        <div class="creator-badge" id="bestCreatorBadge">--</div>
+                        <span id="bestCreatorName">-</span>
+                    </div>
+                    <div class="best-stats">
+                        <span><i class="fas fa-heart"></i> <span id="bestLikes">0</span> Beğeni</span>
+                        <span><i class="fas fa-comment"></i> <span id="bestComments">0</span> Yorum</span>
+                        <span><i class="fas fa-eye"></i> <span id="bestViews">0</span> Görüntülenme</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Profile Summary -->
+            <section class="profile-summary-card" id="profile">
+                <h3 class="card-header">Profil Özeti</h3>
+                <div class="summary-stats">
+                    <div class="summary-stat">
+                        <span class="stat-number">0</span>
+                        <span class="stat-label">Yüklenen</span>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="stat-number">0</span>
+                        <span class="stat-label">Satın Alınan</span>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="stat-number">253</span>
+                        <span class="stat-label">Mevcut</span>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="stat-number">C-</span>
+                        <span class="stat-label">Seviye</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Discord Card -->
+            <section class="discord-card">
+                <div class="discord-icon">
+                    <i class="fab fa-discord"></i>
+                </div>
+                <h3 class="discord-title">Discord Topluluğu</h3>
+                <p class="discord-desc">Binlerce aktif üye ile buluş, yeni arkadaşlar edin ve kombinler hakkında sohbet
+                    et!</p>
+                <a href="#" class="discord-btn" id="discordBtn">
+                    <i class="fab fa-discord"></i>
+                    Sunucuya Katıl
+                </a>
+            </section>
+        </div>
+
+        <!-- Quick Access -->
+        <section class="quick-access">
+            <h3 class="section-title">Hızlı Erişim</h3>
+            <div class="quick-buttons">
+                <a href="kombinler.html" class="quick-btn purple">
+                    <i class="fas fa-shirt"></i>
+                    <div>
+                        <strong>Kombinler</strong>
+                        <span>Kombinleri keşfet</span>
+                    </div>
+                </a>
+                <a href="yukle.html" class="quick-btn pink">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <div>
+                        <strong>Yükle</strong>
+                        <span>Kombin paylaş</span>
+                    </div>
+                </a>
+                <a href="#" class="quick-btn gray">
+                    <i class="fas fa-user"></i>
+                    <div>
+                        <strong>Profil</strong>
+                        <span>Bilgilerini gör</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Featured Section -->
+        <section class="featured-section">
+            <div class="section-header">
+                <div class="section-title-group">
+                    <div class="section-icon orange">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div>
+                        <h3 class="section-title">Öne Çıkanlar</h3>
+                        <p class="section-subtitle">En popüler kombinler ve yüzler</p>
+                    </div>
+                </div>
+                <div class="section-controls">
+                    <div class="featured-tabs">
+                        <button class="featured-tab active" data-period="daily">Günlük</button>
+                        <button class="featured-tab" data-period="weekly">Haftalık</button>
+                        <button class="featured-tab" data-period="monthly">Aylık</button>
+                    </div>
+                    <a href="kombinler.html" class="control-link">Tümünü Gör</a>
+                </div>
+            </div>
+            <div class="featured-wrapper">
+                <button class="featured-nav prev" id="featuredPrev"><i class="fas fa-chevron-left"></i></button>
+                <div class="featured-slider" id="featuredSlider">
+                    <!-- Populated by JS -->
+                </div>
+                <button class="featured-nav next" id="featuredNext"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- Top 10 Section -->
+        <section class="top10-section">
+            <div class="section-header">
+                <div class="section-title-group">
+                    <div class="section-icon red">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div>
+                        <h3 class="section-title">Top 10</h3>
+                        <p class="section-subtitle">En çok beğenilen kombinler ve yüzler</p>
+                    </div>
+                </div>
+                <div class="top10-tabs">
+                    <button class="top10-tab active" data-type="kombinler">Kombinler</button>
+                    <button class="top10-tab" data-type="yuzler">Yüzler</button>
+                </div>
+            </div>
+            <div class="top10-grid" id="top10Grid">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <span class="logo-text">Starlit</span>
+                </div>
+                <p class="footer-desc">Yaratıcılığınızı keşfedin, benzersiz kombinleri paylaşın ve aktif topluluğumuzun
+                    bir parçası olun. Discord entegrasyonu ile güvenli ve eğlenceli bir platform deneyimi yaşayın.</p>
+                <a href="#" class="footer-discord">
+                    <i class="fab fa-discord"></i>
+                </a>
+            </div>
+
+            <div class="footer-links">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="kombinler.html">Kombinler</a></li>
+                    <li><a href="yukle.html">Kombin Yükle</a></li>
+                    <li><a href="#">Profil</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Topluluk</h4>
+                <ul>
+                    <li><a href="#">Discord Sunucusu</a></li>
+                    <li><a href="#">Topluluk Kuralları</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Starlit. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">İşlem başarılı!</span>
+    </div>
+
+    <script src="database.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
